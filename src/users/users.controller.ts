@@ -44,7 +44,10 @@ export class UsersController {
     getAllUsersByBoard(@Param('boardId') boardId: number) {
         return this.usersService.getAllUsersByBoard(boardId);
     }
-
+    @Get(':userId/getRoleByBoardId/:boardId')
+    getRoleOnBoard(@Param('userId') userId: number, @Param('boardId') boardId: number) {
+        return this.usersService.getRoleOnBoard(userId,boardId);
+    }
     @UseGuards(JwtAuthGuard)
     @Get('currentUser')
     getCurrentUser(@Request() req) {

@@ -11,7 +11,7 @@ export class UsersService {
   constructor(
     @InjectModel(User) private userRepository: typeof User,
     @InjectModel(Board) private boardRepository: typeof Board,
-    @InjectModel(UserBoards) private userBoardsRepository: typeof UserBoards,
+    @InjectModel(UserBoards) private userBoardsRepository: typeof UserBoards
   ) {}
 
   async createUser(dto: CreateUserDto) {
@@ -22,22 +22,30 @@ export class UsersService {
     return user;
   }
 
-    async getAllUsersByBoard(boardId: number) {
-        const users = await User.findAll({
-        attributes: ["id", "email"],
-        include: [
-            {
-            model: Board,
-            through: { model: UserBoards, attributes: [] } as IncludeThroughOptions,
-            where: { id: boardId },
+  async getAllUsersByBoard(boardId: number) {
+    const users = await User.findAll({
+      attributes: ["id", "email", "name"],
+      include: [
+        {
+          model: Board,
+          through: {
+            model: UserBoards,
             attributes: [],
-            },
-        ],
-        group: ["User.id", "User.email"],
-        });
-        return users;
-    }
-
+          } as IncludeThroughOptions,
+          where: { id: boardId },
+          attributes: [],
+        },
+      ],
+      group: ["User.id", "User.email", "User.name"],
+    });
+    return users;
+  }
+  async getRoleOnBoard(userId: number,boardId: number) {
+    const userBoard = this.userBoardsRepository.findOne({
+      where: { userId: userId, boardId: boardId}
+    });
+    return (await userBoard).isOwner;
+  }
   async getAllUsers() {
     const users = await this.userRepository.findAll({ include: { all: true } });
     return users;
