@@ -16,7 +16,7 @@ export class UsersService {
 
   async createUser(dto: CreateUserDto) {
     const user = await this.userRepository.create(dto);
-    user.image = "/image/avatar.jpg";
+    user.name = "MockName"+user.id;
     await user.save();
 
     return user;

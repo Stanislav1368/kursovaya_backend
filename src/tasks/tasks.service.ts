@@ -114,8 +114,9 @@ async updateTask(userId: number, boardId: number, stateId: number, taskId: numbe
     if (!task) {
       throw new NotFoundException('Task not found');
     }
-
+    console.log(task.stateId, updateTaskDto.newStateId);
     task.stateId = updateTaskDto.newStateId;
+
     await task.save();
 
     return task;

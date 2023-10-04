@@ -23,7 +23,7 @@ export class TasksController {
     }
     // - `PUT /users/{user_id}/boards/{board_id}/states/{state_id}/tasks/{task_id}` - обновление информации о задаче
     @Put(':taskId')
-    async updateTask(@Param('userId') userId: number, @Param('boardId') boardId: number, @Param('stateId') stateId: number,@Param('taskId') taskId: number,@Body() updateTaskDto: UpdateTaskDto) {
+    async updateTask(@Param('userId') userId: number, @Param('boardId') boardId: number, @Param('stateId') stateId: number,@Param('taskId') taskId: number, @Body() updateTaskDto: UpdateTaskDto) {
       return this.tasksService.updateTask(userId, boardId, stateId, taskId, updateTaskDto);
     }
     // - `DELETE /users/{user_id}/boards/{board_id}/states/{state_id}/tasks/{task_id}` - удаление задачи
