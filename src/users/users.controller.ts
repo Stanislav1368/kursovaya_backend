@@ -33,7 +33,7 @@ export class UsersController {
         
     }
 
-    @UseGuards(JwtAuthGuard)
+    
     @Get()
     getAllUsers() {
         return this.usersService.getAllUsers();
