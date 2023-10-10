@@ -5,6 +5,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 import { BoardsService } from 'src/boards/boards.service';
 import { CreateBoardDto } from 'src/boards/dto/create-board.dto';
+import { UpdatePrivilegeDto } from './dto/update-privilege.dto';
 
 
 @Controller('users')
@@ -44,9 +45,13 @@ export class UsersController {
     getAllUsersByBoard(@Param('boardId') boardId: number) {
         return this.usersService.getAllUsersByBoard(boardId);
     }
-    @Get(':userId/getRoleByBoardId/:boardId')
+    @Get(':userId/roleByBoardId/:boardId')
     getRoleOnBoard(@Param('userId') userId: number, @Param('boardId') boardId: number) {
         return this.usersService.getRoleOnBoard(userId,boardId);
+    }
+    @Put(':userId/roleByBoardId/:boardId')
+    updateRoleOnBoard(@Param('userId') userId: number, @Param('boardId') boardId: number, @Body() updatePrivilegeDto: UpdatePrivilegeDto) {
+        return this.usersService.updateRoleOnBoard(userId,boardId,updatePrivilegeDto);
     }
     @UseGuards(JwtAuthGuard)
     @Get('currentUser')
