@@ -1,12 +1,15 @@
 import {
+  BelongsTo,
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   Table,
 } from "sequelize-typescript";
 import { Board } from "./boards.model";
 import { User } from "src/users/user.model";
+import { Role } from "src/roles/roles.model";
 
 @Table({ tableName: "user-boards", createdAt: false, updatedAt: false})
 export class UserBoards extends Model<UserBoards> {
@@ -28,4 +31,11 @@ export class UserBoards extends Model<UserBoards> {
   @ForeignKey(() => Board)
   @Column({ type: DataType.INTEGER, allowNull: true })
   boardId: number;
+
+  @BelongsTo(() => Role)
+  role: Role;
+
+  @ForeignKey(() => Role)
+  @Column({ type: DataType.INTEGER, allowNull: true })
+  roleId: number;
 }
