@@ -6,13 +6,16 @@ import { Board } from "src/boards/boards.model";
 import { UserBoards } from "src/boards/user-boards.model";
 import { IncludeThroughOptions } from "sequelize";
 import { UpdatePrivilegeDto } from "./dto/update-privilege.dto";
+import { UpdateRoleDto } from "./dto/update-role.dto";
+import { Role } from "src/roles/roles.model";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User) private userRepository: typeof User,
     @InjectModel(Board) private boardRepository: typeof Board,
-    @InjectModel(UserBoards) private userBoardsRepository: typeof UserBoards
+    @InjectModel(UserBoards) private userBoardsRepository: typeof UserBoards,
+    @InjectModel(Role) private roleRepository: typeof Role
   ) {}
 
   async createUser(dto: CreateUserDto) {
@@ -48,7 +51,8 @@ export class UsersService {
         id: user.id, 
         name: user.name, 
         email: user.email, 
-        isOwner: userBoard.isOwner 
+        isOwner: userBoard.isOwner,
+        roleId: userBoard.roleId 
       }; 
   
       return userInfo; 
@@ -64,6 +68,21 @@ export class UsersService {
     });
     return (await userBoard).isOwner;
   }
+
+
+  async getCurrentRole(userId: number, boardId: number) {
+    const userBoard = this.userBoardsRepository.findOne({
+      where: { userId: userId, boardId: boardId },
+    });
+   
+    const role = this.roleRepository.findOne({
+      where: {id: (await userBoard).roleId}
+    })
+
+    return role;  
+  }
+
+
   async updateRoleOnBoard(userId: number, boardId: number, updatePrivilegeDto: UpdatePrivilegeDto) { 
     console.log(userId, boardId, updatePrivilegeDto.newPrivilege ? true : false) 
     const userBoard = await this.userBoardsRepository.findOne({ 
@@ -73,6 +92,18 @@ export class UsersService {
     await userBoard.save(); 
     return userBoard.isOwner; 
   }
+  async updateRole(userId: number, boardId: number, updateRoleDto: UpdateRoleDto) { 
+    const userBoard = await this.userBoardsRepository.findOne({ 
+      where: { userId: userId, boardId: boardId }, 
+    }); 
+    const roleId = await this.roleRepository.findOne({ 
+      where: { id: updateRoleDto.roleId }, 
+    }); 
+    userBoard.roleId = updateRoleDto.roleId;
+    await userBoard.save(); 
+    return userBoard.roleId; 
+  }
+
   async getAllUsers() {
     const users = await this.userRepository.findAll({ include: { all: true } });
     return users;
