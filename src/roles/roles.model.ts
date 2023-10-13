@@ -7,6 +7,7 @@ interface RoleCreationAttr {
   name: string;
   isRead: boolean;
   isCreate: boolean;
+  isDelete: boolean;
 }
 
 @Table({ tableName: "roles" })
