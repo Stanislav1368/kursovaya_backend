@@ -10,13 +10,14 @@ import { UserBoards } from 'src/boards/user-boards.model';
 import { BoardsController } from 'src/boards/boards.controller';
 import { BoardsService } from 'src/boards/boards.service';
 import { Role } from 'src/roles/roles.model';
+import { UserTasks } from 'src/tasks/user-tasks.model';
 
 
 @Module({
   controllers: [UsersController, BoardsController],
   providers: [UsersService, BoardsService],
   imports: [
-    SequelizeModule.forFeature([User, Board, UserBoards, Role]),
+    SequelizeModule.forFeature([User, Board, UserBoards, UserTasks, Role]),
     forwardRef(() => AuthModule),
   ],
   exports: [UsersService],

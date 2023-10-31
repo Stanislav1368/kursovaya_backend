@@ -1,15 +1,9 @@
-import {
-  BelongsToMany,
-  Column,
-  DataType,
-  HasMany,
-  Model,
-  Table,
-} from "sequelize-typescript";
+import { BelongsToMany, Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import { User } from "src/users/user.model";
 import { UserBoards } from "./user-boards.model";
 import { State } from "src/states/states.model";
 import { Role } from "src/roles/roles.model";
+import { Priority } from "src/priorities/priorities.model";
 
 interface BoardCreationAttr {
   title: string;
@@ -36,4 +30,7 @@ export class Board extends Model<Board, BoardCreationAttr> {
 
   @HasMany(() => Role)
   roles: Role[];
+
+  @HasMany(() => Priority)
+  priorities: Priority[];
 }

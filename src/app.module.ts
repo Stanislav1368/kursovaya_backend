@@ -13,6 +13,9 @@ import { State } from "./states/states.model";
 import { Task } from "./tasks/tasks.model";
 import { RolesModule } from "./roles/roles.module";
 import { Role } from "./roles/roles.model";
+import { UserTasks } from "./tasks/user-tasks.model";
+import { PrioritiesModule } from "./priorities/priorities.module";
+import { Priority } from "./priorities/priorities.model";
 
 @Module({
   controllers: [],
@@ -28,7 +31,7 @@ import { Role } from "./roles/roles.model";
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Board, UserBoards, State, Task, Role],
+      models: [User, Board, UserBoards, UserTasks, State, Task, Role, Priority],
       autoLoadModels: true,
       synchronize: true,
     }),
@@ -37,7 +40,8 @@ import { Role } from "./roles/roles.model";
     BoardsModule,
     StatesModule,
     TasksModule,
-    RolesModule
+    RolesModule,
+    PrioritiesModule
   ],
 })
 export class AppModule {}

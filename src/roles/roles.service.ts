@@ -2,13 +2,13 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Board } from "src/boards/boards.model";
 import { Role } from "./roles.model";
-import { CreateRoleDto } from "./dto/create-state.dto";
+import { CreateRoleDto } from "./dto/create-role.dto";
 
 @Injectable()
 export class RolesService {
   constructor(
     @InjectModel(Board) private boardRepository: typeof Board,
-    @InjectModel(Role) private roleRepository: typeof Role,
+    @InjectModel(Role) private roleRepository: typeof Role
   ) {}
 
   async getRoles(boardId: number): Promise<Role[]> {
@@ -17,7 +17,7 @@ export class RolesService {
       throw new NotFoundException("board not found");
     }
 
-    return board.roles
+    return board.roles;
   }
 
   async getRole(boardId: number, roleId: number) {
@@ -30,7 +30,7 @@ export class RolesService {
       throw new NotFoundException("role not found");
     }
 
-    return role
+    return role;
   }
 
   async createRole(boardId: number, createRoleDto: CreateRoleDto) {
@@ -38,7 +38,7 @@ export class RolesService {
     if (!board) {
       throw new NotFoundException("board not found");
     }
-    
+
     const role = new Role();
     role.name = createRoleDto.name;
     role.isRead = createRoleDto.isRead;
@@ -47,6 +47,6 @@ export class RolesService {
     role.boardId = board.id;
     await role.save();
 
-    return role
+    return role;
   }
 }

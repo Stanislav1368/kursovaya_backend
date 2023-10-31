@@ -2,6 +2,8 @@
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table, BelongsToMany } from "sequelize-typescript";
 import { Board } from "src/boards/boards.model";
 import { UserBoards } from "src/boards/user-boards.model";
+import { Task } from "src/tasks/tasks.model";
+import { UserTasks } from "src/tasks/user-tasks.model";
 
 
 
@@ -35,5 +37,8 @@ export class User extends Model<User, UserCreationAttr> {
 
   @BelongsToMany(() => Board, () => UserBoards)
   boards: Board[];
+
+  @BelongsToMany(() => Task, () => UserTasks)
+  tasks: Task[];
 
 }

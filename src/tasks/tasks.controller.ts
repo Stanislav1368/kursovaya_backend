@@ -7,19 +7,23 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 @Controller('users/:userId/boards/:boardId/states/:stateId/tasks')
 export class TasksController {
     constructor(private tasksService: TasksService) {}
+    // @Get()
+    // async getTasks(@Param('userId') userId: number, @Param('boardId') boardId: number, @Param('stateId') stateId: number, @Body() createTaskDto: CreateTaskDto) {
+    //     return this.tasksService.getTasks(userId, boardId, stateId);
+    // }
     @Get()
-    async getTasks(@Param('userId') userId: number, @Param('boardId') boardId: number, @Param('stateId') stateId: number, @Body() createTaskDto: CreateTaskDto) {
-        return this.tasksService.getTasks(userId, boardId, stateId);
+    async getTasksInfo(@Param('userId') userId: number, @Param('boardId') boardId: number, @Param('stateId') stateId: number, @Body() createTaskDto: CreateTaskDto) {
+        return this.tasksService.getTasksInfo(userId, boardId, stateId);
     }
     // - `GET /users/{user_id}/boards/{board_id}/states/{state_id}/tasks/{task_id}` - получение информации о конкретной задаче
     @Get(':taskId')
     async getTaskById(@Param('userId') userId: number, @Param('boardId') boardId: number, @Param('stateId') stateId: number,@Param('taskId') taskId: number, @Body() createTaskDto: CreateTaskDto) {
-        return this.tasksService.getStateTaskById(userId, boardId, stateId, taskId);
+        return this.tasksService.getTaskById(userId, boardId, stateId, taskId);
     }
     // - `POST /users/{user_id}/boards/{board_id}/states/{state_id}/tasks` - создание новой задачи
     @Post()
     async createTask(@Param('userId') userId: number, @Param('boardId') boardId: number, @Param('stateId') stateId: number, @Body() createTaskDto: CreateTaskDto) {
-        return this.tasksService.createStateTask(userId, boardId, stateId, createTaskDto);
+        return this.tasksService.createTask(userId, boardId, stateId, createTaskDto);
     }
     // - `PUT /users/{user_id}/boards/{board_id}/states/{state_id}/tasks/{task_id}` - обновление информации о задаче
     @Put(':taskId')

@@ -1,6 +1,9 @@
-import { BelongsTo, Column, DataType, ForeignKey, Model,Table } from "sequelize-typescript";
+import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model,Table } from "sequelize-typescript";
 import { Board } from "src/boards/boards.model";
 import { State } from "src/states/states.model";
+import { User } from "src/users/user.model";
+import { UserTasks } from "./user-tasks.model";
+import { Priority } from "src/priorities/priorities.model";
 
 
 interface TaskCreationAttr {
@@ -26,4 +29,13 @@ export class Task extends Model<Task, TaskCreationAttr> {
     @Column({ type: DataType.INTEGER, allowNull: true })
     stateId: number;
 
+    @BelongsToMany(() => User, () => UserTasks)
+    users: User[];
+
+    @BelongsTo(() => Priority)
+    priority: Priority;
+  
+    @ForeignKey(() => Priority)
+    @Column({ type: DataType.INTEGER, allowNull: true })
+    priorityId: number;
 }

@@ -47,14 +47,22 @@ export class UsersService {
       const userBoard = await this.userBoardsRepository.findOne({ 
         where: { userId: user.id, boardId: boardId } 
       }); 
+      const role = await this.roleRepository.findOne({ 
+        where: {id: userBoard.roleId, boardId: boardId } 
+      }); 
+
       const userInfo = { 
         id: user.id, 
         name: user.name, 
         email: user.email, 
         isOwner: userBoard.isOwner,
-        roleId: userBoard.roleId 
+        roleId: userBoard.roleId,
+        roleName: role?.name,
+        isRead: role?.isRead,
+        isCreate: role?.isCreate,
+        isDelete: role?.isDelete,
       }; 
-  
+
       return userInfo; 
     })); 
   
@@ -84,7 +92,7 @@ export class UsersService {
 
 
   async updateRoleOnBoard(userId: number, boardId: number, updatePrivilegeDto: UpdatePrivilegeDto) { 
-    console.log(userId, boardId, updatePrivilegeDto.newPrivilege ? true : false) 
+
     const userBoard = await this.userBoardsRepository.findOne({ 
       where: { userId: userId, boardId: boardId }, 
     }); 
