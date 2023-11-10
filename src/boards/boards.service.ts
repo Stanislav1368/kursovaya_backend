@@ -6,6 +6,7 @@ import { CreateBoardDto } from "./dto/create-board.dto";
 import { UserBoards } from "./user-boards.model";
 import { UsersService } from "src/users/users.service";
 import { State } from "src/states/states.model";
+import { UpdateBoardTitleDto } from "./dto/update-board-title.dto";
 
 @Injectable()
 export class BoardsService {
@@ -22,6 +23,21 @@ export class BoardsService {
     }
 
     return user.boards;
+  }
+  async updateBoard(userId: number, boardId: number, updateBoardTitleDto: UpdateBoardTitleDto) {
+    console.log(updateBoardTitleDto)
+    const user = await this.userRepository.findByPk(userId);
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+    const board = await this.boardRepository.findByPk(boardId);
+    if (!board) {
+      throw new NotFoundException("Board not found");
+    }
+    board.title = updateBoardTitleDto.title;
+  
+    await board.save();
+    return board;
   }
   async getBoardById(boardId: number) {
     const board = await this.boardRepository.findOne({ 

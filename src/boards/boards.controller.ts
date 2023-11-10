@@ -12,6 +12,7 @@ import {
 } from "@nestjs/common";
 import { CreateBoardDto } from "./dto/create-board.dto";
 import { BoardsService } from "./boards.service";
+import { UpdateBoardTitleDto } from "./dto/update-board-title.dto";
 
 @Controller("users/:userId/boards")
 export class BoardsController {
@@ -21,7 +22,10 @@ export class BoardsController {
   async getAllBoards(@Param("userId") userId: number) {
     return this.boardsService.getAllBoards(userId);
   }
-
+  @Put(':boardId')
+  async updateBoard(@Param("userId") userId: number, @Param("boardId") boardId: number, @Body() updateBoardTitleDto: UpdateBoardTitleDto) {
+    return this.boardsService.updateBoard(userId, boardId, updateBoardTitleDto);
+  }
   @Get(':boardId')
   async getBoardById(@Param('boardId') boardId: number) {
     return this.boardsService.getBoardById(boardId);

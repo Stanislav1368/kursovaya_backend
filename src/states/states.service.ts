@@ -31,7 +31,7 @@ export class StatesService {
         {
           model: Task,
           as: "tasks",
-          attributes: ["id", "title", "description", "stateId"],
+          attributes: ["id", "title", "description", "stateId", "order"],
           include: [
             {
               model: User,

@@ -25,6 +25,9 @@ export class Task extends Model<Task, TaskCreationAttr> {
     @BelongsTo(() => State)
     state: State;
 
+    @Column({type:DataType.INTEGER, allowNull: true})    
+    order: number;
+
     @ForeignKey(() => State)
     @Column({ type: DataType.INTEGER, allowNull: true })
     stateId: number;

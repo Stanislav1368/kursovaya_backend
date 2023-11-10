@@ -131,7 +131,9 @@ export class TasksService {
     task.title = createTaskDto.title;
     task.description = createTaskDto.description;
     task.stateId = state.id;
-    task.priorityId = createTaskDto.priorityId
+    task.priorityId = createTaskDto.priorityId;
+    const maxOrder = await this.findMaxOrderInState(stateId);
+    task.order = maxOrder + 1;
     await task.save();
 
     const userIds = createTaskDto.userIds; // Получаем массив идентификаторов пользователей
@@ -145,7 +147,24 @@ export class TasksService {
 
     return task;
   }
+  async findMaxOrderInState(stateId: number): Promise<number> {
+    const maxOrderTask = await this.taskRepository.findOne({
+      where: { stateId },
+      order: [["order", "DESC"]],
+    });
+    return maxOrderTask ? maxOrderTask.order : 0;
+  }
+  async reorderTasksInState(stateId: number) {
+    const tasks = await this.taskRepository.findAll({ where: { stateId }, order: [["order", "ASC"]] });
+    let order = 1;
+    for (const t of tasks) {
+      t.order = order;
+      await t.save();
+      order++;
+    }
+  }
   async updateTask(userId: number, boardId: number, stateId: number, taskId: number, updateTaskDto: UpdateTaskDto) {
+    console.log(updateTaskDto)
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
       throw new NotFoundException("User not found");
@@ -166,9 +185,12 @@ export class TasksService {
       throw new NotFoundException("Task not found");
     }
 
+    const oldStateId = task.stateId;
     task.stateId = updateTaskDto.newStateId;
-
+    task.order = (await this.findMaxOrderInState(updateTaskDto.newStateId)) + 1; // Назначить последний порядковый номер в новом столбце
+    await this.reorderTasksInState(oldStateId);
     await task.save();
+
 
     return task;
   }
