@@ -1,44 +1,49 @@
-import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model,Table } from "sequelize-typescript";
+import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
 import { Board } from "src/boards/boards.model";
 import { State } from "src/states/states.model";
 import { User } from "src/users/user.model";
 import { UserTasks } from "./user-tasks.model";
 import { Priority } from "src/priorities/priorities.model";
 
-
 interface TaskCreationAttr {
-    title: string;
-    description: string;
+  title: string;
+  description: string;
 }
 
-@Table({tableName: 'tasks'})
+@Table({ tableName: "tasks" })
 export class Task extends Model<Task, TaskCreationAttr> {
-    @Column({type:DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
-    id: number;
+  @Column({ type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true })
+  id: number;
 
-    @Column({type:DataType.STRING, allowNull: false})    
-    title: string;
+  @Column({ type: DataType.STRING, allowNull: false })
+  title: string;
 
-    @Column({type:DataType.STRING, allowNull: false})    
-    description : string;
+  @Column({ type: DataType.STRING, allowNull: false })
+  description: string;
 
-    @BelongsTo(() => State)
-    state: State;
-
-    @Column({type:DataType.INTEGER, allowNull: true})    
-    order: number;
-
-    @ForeignKey(() => State)
-    @Column({ type: DataType.INTEGER, allowNull: true })
-    stateId: number;
-
-    @BelongsToMany(() => User, () => UserTasks)
-    users: User[];
-
-    @BelongsTo(() => Priority)
-    priority: Priority;
+  @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false }) 
+  isCompleted: boolean;
   
-    @ForeignKey(() => Priority)
-    @Column({ type: DataType.INTEGER, allowNull: true })
-    priorityId: number;
+  @BelongsTo(() => State)
+  state: State;
+
+  @Column({ type: DataType.INTEGER, allowNull: true })
+  order: number;
+
+  @Column({ type: DataType.DATE, allowNull: true }) 
+  deadline: Date;
+
+  @ForeignKey(() => State)
+  @Column({ type: DataType.INTEGER, allowNull: true })
+  stateId: number;
+
+  @BelongsToMany(() => User, () => UserTasks)
+  users: User[];
+
+  @BelongsTo(() => Priority)
+  priority: Priority;
+
+  @ForeignKey(() => Priority)
+  @Column({ type: DataType.INTEGER, allowNull: true })
+  priorityId: number;
 }

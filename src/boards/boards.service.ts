@@ -25,7 +25,7 @@ export class BoardsService {
     return user.boards;
   }
   async updateBoard(userId: number, boardId: number, updateBoardTitleDto: UpdateBoardTitleDto) {
-    console.log(updateBoardTitleDto)
+
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
       throw new NotFoundException("User not found");

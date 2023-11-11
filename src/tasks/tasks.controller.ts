@@ -17,7 +17,7 @@ export class TasksController {
     }
     // - `GET /users/{user_id}/boards/{board_id}/states/{state_id}/tasks/{task_id}` - получение информации о конкретной задаче
     @Get(':taskId')
-    async getTaskById(@Param('userId') userId: number, @Param('boardId') boardId: number, @Param('stateId') stateId: number,@Param('taskId') taskId: number, @Body() createTaskDto: CreateTaskDto) {
+    async getTaskById(@Param('userId') userId: number, @Param('boardId') boardId: number, @Param('stateId') stateId: number,@Param('taskId') taskId: number) {
         return this.tasksService.getTaskById(userId, boardId, stateId, taskId);
     }
     // - `POST /users/{user_id}/boards/{board_id}/states/{state_id}/tasks` - создание новой задачи
@@ -29,6 +29,10 @@ export class TasksController {
     @Put(':taskId')
     async updateTask(@Param('userId') userId: number, @Param('boardId') boardId: number, @Param('stateId') stateId: number,@Param('taskId') taskId: number, @Body() updateTaskDto: UpdateTaskDto) {
       return this.tasksService.updateTask(userId, boardId, stateId, taskId, updateTaskDto);
+    }
+    @Put(':taskId/isCompleted')
+    async updateTaskIsCompleted(@Param('userId') userId: number, @Param('boardId') boardId: number, @Param('stateId') stateId: number,@Param('taskId') taskId: number, @Body() updateTaskDto: UpdateTaskDto) {
+        return this.tasksService.updateTaskIsCompleted(userId, boardId, stateId, taskId, updateTaskDto);
     }
     // - `DELETE /users/{user_id}/boards/{board_id}/states/{state_id}/tasks/{task_id}` - удаление задачи
     @Delete(':taskId')

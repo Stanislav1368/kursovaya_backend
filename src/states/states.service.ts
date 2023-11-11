@@ -31,7 +31,7 @@ export class StatesService {
         {
           model: Task,
           as: "tasks",
-          attributes: ["id", "title", "description", "stateId", "order"],
+          // attributes: ["id", "title", "description", "stateId", "order"],
           include: [
             {
               model: User,
@@ -108,14 +108,14 @@ export class StatesService {
       throw new NotFoundException("State not found");
     }
 
-    // const tasks: Task[] = await this.taskService.getTasks(
-    //   userId,
-    //   boardId,
-    //   stateId
-    // );
-    // for (const task of tasks) {
-    //   await task.destroy();
-    // }
+    const tasks: Task[] = await this.taskService.getTasks(
+      userId,
+      boardId,
+      stateId
+    );
+    for (const task of tasks) {
+      await task.destroy();
+    }
 
     await state.destroy();
     return { message: "State deleted successfully" };

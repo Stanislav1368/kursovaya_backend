@@ -132,6 +132,7 @@ export class TasksService {
     task.description = createTaskDto.description;
     task.stateId = state.id;
     task.priorityId = createTaskDto.priorityId;
+    task.deadline = createTaskDto.deadline;
     const maxOrder = await this.findMaxOrderInState(stateId);
     task.order = maxOrder + 1;
     await task.save();
@@ -157,14 +158,45 @@ export class TasksService {
   async reorderTasksInState(stateId: number) {
     const tasks = await this.taskRepository.findAll({ where: { stateId }, order: [["order", "ASC"]] });
     let order = 1;
-    for (const t of tasks) {
-      t.order = order;
-      await t.save();
-      order++;
+    await Promise.all(
+      tasks.map(async (t) => {
+        t.order = order;
+        await t.save();
+        order++;
+      })
+    );
+  }
+
+  async updateTaskIsCompleted(userId: number, boardId: number, stateId: number, taskId: number, updateTaskDto: UpdateTaskDto) {
+
+    const user = await this.userRepository.findByPk(userId);
+    if (!user) {
+      throw new NotFoundException("User not found");
     }
+
+    const board = await this.boardRepository.findByPk(boardId);
+    if (!board) {
+      throw new NotFoundException("Board not found");
+    }
+
+    const state = await this.stateRepository.findByPk(stateId);
+    if (!state) {
+      throw new NotFoundException("State not found");
+    }
+
+    const task = await this.taskRepository.findByPk(taskId);
+    if (!task) {
+      throw new NotFoundException("Task not found");
+    }
+
+
+    task.isCompleted = updateTaskDto.isCompleted;
+ 
+    await task.save();
+    return task;
   }
   async updateTask(userId: number, boardId: number, stateId: number, taskId: number, updateTaskDto: UpdateTaskDto) {
-    console.log(updateTaskDto)
+
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
       throw new NotFoundException("User not found");
@@ -187,11 +219,15 @@ export class TasksService {
 
     const oldStateId = task.stateId;
     task.stateId = updateTaskDto.newStateId;
-    task.order = (await this.findMaxOrderInState(updateTaskDto.newStateId)) + 1; // Назначить последний порядковый номер в новом столбце
-    await this.reorderTasksInState(oldStateId);
+    if (oldStateId !== updateTaskDto.newStateId) {
+      const maxOrderInNewState = await this.findMaxOrderInState(updateTaskDto.newStateId);
+      task.order = maxOrderInNewState === 0 ? 1 : maxOrderInNewState + 1;
+      // await this.reorderTasksInState(oldStateId);
+      // await this.reorderTasksInState(updateTaskDto.newStateId);
+
+    }
+
     await task.save();
-
-
     return task;
   }
   async deleteTaskById(userId: number, boardId: number, stateId: number, taskId: number) {
