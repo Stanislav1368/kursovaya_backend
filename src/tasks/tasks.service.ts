@@ -8,6 +8,7 @@ import { CreateTaskDto } from "./dto/create-task.dto";
 import { UpdateTaskDto } from "./dto/update-task.dto";
 import { UserTasks } from "./user-tasks.model";
 import { IncludeThroughOptions } from "sequelize";
+import { Priority } from "src/priorities/priorities.model";
 
 @Injectable()
 export class TasksService {
@@ -104,11 +105,22 @@ export class TasksService {
 
     const task = await this.taskRepository.findOne({
       where: { id: taskId, stateId },
+      include: [
+        {
+          model: User,
+          through: { attributes: [] },
+          attributes: ["id", "email", "name"],
+        },
+        {
+          model: Priority,
+          attributes: ["name", "index", "color"],
+        },
+      ],
     });
     if (!task) {
       throw new NotFoundException("Task not found");
     }
-
+    console.log(task.users[1])
     return task;
   }
 

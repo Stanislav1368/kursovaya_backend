@@ -36,7 +36,7 @@ export class StatesService {
             {
               model: User,
               through: { attributes: [] },
-              attributes: ["name"],
+              attributes: ["id", "email", "name"],
             },
             {
               model: Priority,
@@ -46,7 +46,7 @@ export class StatesService {
         },
       ],
     });
-
+    // console.log(states[0].tasks[0].users)
     return states;
   }
   async getBoardStateById(userId: number, boardId: number, stateId: number) {
@@ -66,8 +66,7 @@ export class StatesService {
       where: { id: stateId },
       include: {
         model: Task,
-        as: "tasks",
-        attributes: ["id", "title", "description", "stateId"],
+        as: "tasks"
       },
     });
     if (!state) {
