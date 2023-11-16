@@ -16,7 +16,7 @@ export class State extends Model<State, StateCreationAttr> {
     @Column({type:DataType.STRING, allowNull: false})    
     title: string;
 
-    @BelongsTo(() => Board)
+    @BelongsTo(() => Board, { onDelete: 'CASCADE' })
     board: Board;
 
     @ForeignKey(() => Board)

@@ -24,7 +24,10 @@ export class Task extends Model<Task, TaskCreationAttr> {
   @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false }) 
   isCompleted: boolean;
   
-  @BelongsTo(() => State)
+  @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false }) 
+  isArchived: boolean;
+
+  @BelongsTo(() => State, { onDelete: 'CASCADE' })
   state: State;
 
   @Column({ type: DataType.INTEGER, allowNull: true })

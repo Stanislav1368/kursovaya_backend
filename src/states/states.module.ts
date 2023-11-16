@@ -13,9 +13,10 @@ import { Task } from 'src/tasks/tasks.model';
 @Module({
   providers: [StatesService],
   controllers: [StatesController],
-  imports: [
-    SequelizeModule.forFeature([User, Board, State, UserBoards, UserTasks, Task]),
-    TasksModule
-  ]
+  imports: [ 
+    SequelizeModule.forFeature([User, Board, State, UserBoards, UserTasks, Task]), 
+    TasksModule, 
+  ], 
+  exports: [StatesService] 
 })
 export class StatesModule {}

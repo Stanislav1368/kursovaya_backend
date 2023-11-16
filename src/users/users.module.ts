@@ -11,6 +11,7 @@ import { BoardsController } from 'src/boards/boards.controller';
 import { BoardsService } from 'src/boards/boards.service';
 import { Role } from 'src/roles/roles.model';
 import { UserTasks } from 'src/tasks/user-tasks.model';
+import { StatesModule } from 'src/states/states.module';
 
 
 @Module({
@@ -18,7 +19,7 @@ import { UserTasks } from 'src/tasks/user-tasks.model';
   providers: [UsersService, BoardsService],
   imports: [
     SequelizeModule.forFeature([User, Board, UserBoards, UserTasks, Role]),
-    forwardRef(() => AuthModule),
+    forwardRef(() => AuthModule), StatesModule
   ],
   exports: [UsersService],
 })

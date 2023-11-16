@@ -41,9 +41,15 @@ export class RolesService {
 
     const role = new Role();
     role.name = createRoleDto.name;
-    role.isRead = createRoleDto.isRead;
-    role.isCreate = createRoleDto.isCreate;
-    role.isDelete = createRoleDto.isDelete;
+
+    role.canEditBoardInfo = createRoleDto.canEditBoardInfo;
+    role.canAddColumns = createRoleDto.canAddColumns;
+    role.canAddUsers = createRoleDto.canAddUsers;
+    role.canAddPriorities = createRoleDto.canAddPriorities;
+    role.canCreateRoles = createRoleDto.canCreateRoles;
+    role.canAccessStatistics = createRoleDto.canAccessStatistics;
+    role.canCreateReports = createRoleDto.canCreateReports;
+    role.canAccessArchive = createRoleDto.canAccessArchive;
     role.boardId = board.id;
     await role.save();
 

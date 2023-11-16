@@ -58,9 +58,15 @@ export class UsersService {
         isOwner: userBoard.isOwner,
         roleId: userBoard.roleId,
         roleName: role?.name,
-        isRead: role?.isRead,
-        isCreate: role?.isCreate,
-        isDelete: role?.isDelete,
+        canEditBoardInfo: role?.canEditBoardInfo,
+        canAddColumns: role?.canAddColumns,
+        canAddUsers: role?.canAddUsers,
+        canAddPriorities: role?.canAddPriorities,
+        canCreateRoles: role?.canCreateRoles,
+        canAccessStatistics: role?.canAccessStatistics,
+        canCreateReports: role?.canCreateReports,
+        canAccessArchive: role?.canAccessArchive,
+
       }; 
 
       return userInfo; 
@@ -104,9 +110,9 @@ export class UsersService {
     const userBoard = await this.userBoardsRepository.findOne({ 
       where: { userId: userId, boardId: boardId }, 
     }); 
-    const roleId = await this.roleRepository.findOne({ 
-      where: { id: updateRoleDto.roleId }, 
-    }); 
+    // const roleId = await this.roleRepository.findOne({ 
+    //   where: { id: updateRoleDto.roleId }, 
+    // }); 
     userBoard.roleId = updateRoleDto.roleId;
     await userBoard.save(); 
     return userBoard.roleId; 

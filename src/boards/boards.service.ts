@@ -7,13 +7,17 @@ import { UserBoards } from "./user-boards.model";
 import { UsersService } from "src/users/users.service";
 import { State } from "src/states/states.model";
 import { UpdateBoardTitleDto } from "./dto/update-board-title.dto";
+import { StatesService } from "src/states/states.service";
+import { RolesService } from "src/roles/roles.service";
 
 @Injectable()
 export class BoardsService {
   constructor(
     @InjectModel(User) private userRepository: typeof User,
     @InjectModel(Board) private boardRepository: typeof Board,
-    @InjectModel(UserBoards) private userBoardsRepository: typeof UserBoards
+    @InjectModel(UserBoards) private userBoardsRepository: typeof UserBoards,
+    private statesService: StatesService,
+
   ) {}
 
   async getAllBoards(userId: number): Promise<Board[]> {
@@ -93,7 +97,16 @@ export class BoardsService {
     if (!board) {
       throw new Error("Board not found");
     }
+    const states: State[] = await this.statesService.getStatesByBoardId(
+      boardId
+    );
 
+    for (const state of states) {
+      for (const task of state.tasks) {
+        await task.destroy();
+      }
+      await state.destroy();
+    }
     await board.destroy();
   }
 }

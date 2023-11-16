@@ -5,9 +5,22 @@ import { State } from "src/states/states.model";
 
 interface RoleCreationAttr {
   name: string;
-  isRead: boolean;
-  isCreate: boolean;
-  isDelete: boolean;
+
+  canEditBoardInfo: boolean;
+
+  canAddColumns: boolean;
+
+  canAddUsers: boolean;
+
+  canAddPriorities: boolean;
+
+  canCreateRoles: boolean;
+
+  canAccessStatistics: boolean;
+
+  canCreateReports: boolean;
+
+  canAccessArchive: boolean;
 }
 
 @Table({ tableName: "roles" })
@@ -19,13 +32,28 @@ export class Role extends Model<Role, RoleCreationAttr> {
   name: string;
 
   @Column({ type: DataType.BOOLEAN, allowNull: false })
-  isRead: boolean;
+  canEditBoardInfo: boolean;
 
   @Column({ type: DataType.BOOLEAN, allowNull: false })
-  isCreate: boolean;
+  canAddColumns: boolean;
 
   @Column({ type: DataType.BOOLEAN, allowNull: false })
-  isDelete: boolean;
+  canAddUsers: boolean;
+
+  @Column({ type: DataType.BOOLEAN, allowNull: false })
+  canAddPriorities: boolean;
+
+  @Column({ type: DataType.BOOLEAN, allowNull: false })
+  canCreateRoles: boolean;
+
+  @Column({ type: DataType.BOOLEAN, allowNull: false })
+  canAccessStatistics: boolean;
+
+  @Column({ type: DataType.BOOLEAN, allowNull: false })
+  canCreateReports: boolean;
+
+  @Column({ type: DataType.BOOLEAN, allowNull: false })
+  canAccessArchive: boolean;
 
   @BelongsTo(() => Board)
   board: Board;
