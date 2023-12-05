@@ -40,5 +40,4 @@ export class User extends Model<User, UserCreationAttr> {
 
   @BelongsToMany(() => Task, () => UserTasks)
   tasks: Task[];
-
 }

@@ -38,23 +38,38 @@ export class TasksService {
     }
 
     const tasks: Task[] = await this.taskRepository.findAll({
-      where: { stateId },
+      where: { stateId }
+    });
+    console.log(tasks)
+    // const tasksWithUserData = tasks.map((task) => {
+    //   const user = task.users[0]; // Получение первого связанного пользователя
+    //   const userResp = user.name; // Имя пользователя
+    //   const title = task.title;
+    //   const description = task.description;
+
+    //   return { userResp, title, description };
+    // });
+
+    return tasks;
+  }
+  async getCheckedTasks(userId: number, boardId: number) {
+    const tasks = await Task.findAll({
+      where: {isArchived: true},
       include: [
-        { model: User, through: { model: UserTasks } as IncludeThroughOptions }, // Связь с моделью User через модель UserTasks
-        { model: State }, // Включение модели State
-      ],
+        {
+          model: State,
+          where: { boardId: boardId },
+          include: [
+            {
+              model: Board,
+              where: { id: boardId }
+            }
+          ]
+        }
+      ]
     });
-
-    const tasksWithUserData = tasks.map((task) => {
-      const user = task.users[0]; // Получение первого связанного пользователя
-      const userResp = user.name; // Имя пользователя
-      const title = task.title;
-      const description = task.description;
-
-      return { userResp, title, description };
-    });
-
-    return tasksWithUserData;
+    console.log(tasks)
+    return tasks;
   }
   async getTasks(userId: number, boardId: number, stateId: number) {
     const user = await this.userRepository.findOne({
@@ -204,6 +219,34 @@ export class TasksService {
 
     task.isCompleted = updateTaskDto.isCompleted;
  
+    await task.save();
+    return task;
+  }
+  
+  async taskToArchive(userId: number, boardId: number, stateId: number, taskId: number, updateTaskDto: UpdateTaskDto) {
+
+    const user = await this.userRepository.findByPk(userId);
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    const board = await this.boardRepository.findByPk(boardId);
+    if (!board) {
+      throw new NotFoundException("Board not found");
+    }
+
+    const state = await this.stateRepository.findByPk(stateId);
+    if (!state) {
+      throw new NotFoundException("State not found");
+    }
+
+    const task = await this.taskRepository.findByPk(taskId);
+    if (!task) {
+      throw new NotFoundException("Task not found");
+    }
+
+    const oldStateId = task.stateId;
+    task.isArchived = updateTaskDto.isArchived;
     await task.save();
     return task;
   }
