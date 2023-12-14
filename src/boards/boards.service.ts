@@ -16,8 +16,7 @@ export class BoardsService {
     @InjectModel(User) private userRepository: typeof User,
     @InjectModel(Board) private boardRepository: typeof Board,
     @InjectModel(UserBoards) private userBoardsRepository: typeof UserBoards,
-    private statesService: StatesService,
-
+    private statesService: StatesService
   ) {}
 
   async getAllBoards(userId: number): Promise<Board[]> {
@@ -29,7 +28,6 @@ export class BoardsService {
     return user.boards;
   }
   async updateBoard(userId: number, boardId: number, updateBoardTitleDto: UpdateBoardTitleDto) {
-
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
       throw new NotFoundException("User not found");
@@ -39,37 +37,34 @@ export class BoardsService {
       throw new NotFoundException("Board not found");
     }
     board.title = updateBoardTitleDto.title;
-  
+
     await board.save();
     return board;
   }
   async getBoardById(boardId: number) {
-    const board = await this.boardRepository.findOne({ 
+    const board = await this.boardRepository.findOne({
       where: { id: boardId },
       include: {
         model: State,
-        as: 'states',
-        attributes: ['id', 'title', 'boardId'],
+        as: "states",
+        attributes: ["id", "title", "boardId"],
       },
     });
-    
+
     if (!board) {
-      throw new NotFoundException('Board not found');
+      throw new NotFoundException("Board not found");
     }
-    
+
     return board;
   }
-  async createBoardForUser(
-    userId: number,
-    createBoardDto: CreateBoardDto
-  ): Promise<Board> {
+  async createBoardForUser(userId: number, createBoardDto: CreateBoardDto): Promise<Board> {
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
     const board = await this.boardRepository.create(createBoardDto);
-    await UserBoards.create({ userId, boardId: board.id, isOwner: true  });
+    await UserBoards.create({ userId, boardId: board.id, isOwner: true });
 
     return board;
   }
@@ -97,9 +92,7 @@ export class BoardsService {
     if (!board) {
       throw new Error("Board not found");
     }
-    const states: State[] = await this.statesService.getStatesByBoardId(
-      boardId
-    );
+    const states: State[] = await this.statesService.getStatesByBoardId(boardId);
 
     for (const state of states) {
       for (const task of state.tasks) {

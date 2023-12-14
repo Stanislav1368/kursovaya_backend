@@ -167,6 +167,7 @@ export class TasksService {
     const userIds = createTaskDto.userIds; // Получаем массив идентификаторов пользователей
 
     for (const uid of userIds) {
+      console.log(uid, task.id)
       const userTasks = new UserTasks();
       userTasks.userId = uid;
       userTasks.taskId = task.id;

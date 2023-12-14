@@ -110,9 +110,7 @@ export class UsersService {
     const userBoard = await this.userBoardsRepository.findOne({ 
       where: { userId: userId, boardId: boardId }, 
     }); 
-    // const roleId = await this.roleRepository.findOne({ 
-    //   where: { id: updateRoleDto.roleId }, 
-    // }); 
+
     userBoard.roleId = updateRoleDto.roleId;
     await userBoard.save(); 
     return userBoard.roleId; 
