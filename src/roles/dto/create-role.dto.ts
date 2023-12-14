@@ -17,3 +17,5 @@ export class CreateRoleDto {
 
   readonly canAccessArchive: boolean;
 }
+
+
