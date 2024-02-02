@@ -34,7 +34,10 @@ export class Task extends Model<Task, TaskCreationAttr> {
   order: number;
 
   @Column({ type: DataType.DATE, allowNull: true }) 
-  deadline: Date;
+  startDate: Date
+
+  @Column({ type: DataType.DATE, allowNull: true }) 
+  endDate: Date;
 
   @ForeignKey(() => State)
   @Column({ type: DataType.INTEGER, allowNull: true })

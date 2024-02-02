@@ -159,7 +159,8 @@ export class TasksService {
     task.description = createTaskDto.description;
     task.stateId = state.id;
     task.priorityId = createTaskDto.priorityId;
-    task.deadline = createTaskDto.deadline;
+    task.startDate = createTaskDto.startDate;
+    task.endDate = createTaskDto.endDate;
     const maxOrder = await this.findMaxOrderInState(stateId);
     task.order = maxOrder + 1;
     await task.save();

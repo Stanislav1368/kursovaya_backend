@@ -16,10 +16,11 @@ import { Role } from "./roles/roles.model";
 import { UserTasks } from "./tasks/user-tasks.model";
 import { PrioritiesModule } from "./priorities/priorities.module";
 import { Priority } from "./priorities/priorities.model";
+import { SocketService } from "./socket.service";
 
 @Module({
   controllers: [],
-  providers: [],
+  providers: [SocketService],
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.${process.env.NODE_ENV}.env`,

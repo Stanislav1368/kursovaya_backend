@@ -38,7 +38,7 @@ export class RolesService {
     if (!board) {
       throw new NotFoundException("board not found");
     }
-
+    console.log(createRoleDto);
     const role = new Role();
     role.name = createRoleDto.name;
 

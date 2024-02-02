@@ -4,11 +4,9 @@ import { User } from "src/users/user.model";
 import { Board } from "./boards.model";
 import { CreateBoardDto } from "./dto/create-board.dto";
 import { UserBoards } from "./user-boards.model";
-import { UsersService } from "src/users/users.service";
 import { State } from "src/states/states.model";
 import { UpdateBoardTitleDto } from "./dto/update-board-title.dto";
 import { StatesService } from "src/states/states.service";
-import { RolesService } from "src/roles/roles.service";
 
 @Injectable()
 export class BoardsService {
@@ -25,6 +23,7 @@ export class BoardsService {
       throw new NotFoundException("User not found");
     }
 
+    console.log(user.boards)
     return user.boards;
   }
   async updateBoard(userId: number, boardId: number, updateBoardTitleDto: UpdateBoardTitleDto) {
@@ -65,7 +64,7 @@ export class BoardsService {
 
     const board = await this.boardRepository.create(createBoardDto);
     await UserBoards.create({ userId, boardId: board.id, isOwner: true });
-
+    console.log(board)
     return board;
   }
 

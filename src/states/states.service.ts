@@ -8,13 +8,15 @@ import { User } from "../users/user.model";
 import { Board } from "../boards/boards.model";
 import { State } from "./states.model";
 import { Priority } from "src/priorities/priorities.model";
+import { SocketService } from "src/socket.service";
 @Injectable()
 export class StatesService {
   constructor(
     @InjectModel(User) private userRepository: typeof User,
     @InjectModel(Board) private boardRepository: typeof Board,
     @InjectModel(State) private stateRepository: typeof State,
-    private taskService: TasksService
+    private taskService: TasksService,
+    private socketService: SocketService
   ) {}
 
   async getStatesByBoardId(boardId: number) {
@@ -88,6 +90,8 @@ export class StatesService {
     state.title = createStateDto.title;
     state.boardId = board.id;
     await state.save();
+    
+    this.socketService.sendNewStateUpdate(state);
 
     return state;
   }
@@ -117,6 +121,7 @@ export class StatesService {
     }
 
     await state.destroy();
+    this.socketService.sendStateDelete();
     return { message: "State deleted successfully" };
   }
 }

@@ -9,9 +9,10 @@ import { TasksModule } from 'src/tasks/tasks.module';
 import { UserBoards } from 'src/boards/user-boards.model';
 import { UserTasks } from 'src/tasks/user-tasks.model';
 import { Task } from 'src/tasks/tasks.model';
+import { SocketService } from 'src/socket.service';
 
 @Module({
-  providers: [StatesService],
+  providers: [StatesService, SocketService],
   controllers: [StatesController],
   imports: [ 
     SequelizeModule.forFeature([User, Board, State, UserBoards, UserTasks, Task]), 
