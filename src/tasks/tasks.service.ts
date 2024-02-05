@@ -9,6 +9,7 @@ import { UpdateTaskDto } from "./dto/update-task.dto";
 import { UserTasks } from "./user-tasks.model";
 import { IncludeThroughOptions } from "sequelize";
 import { Priority } from "src/priorities/priorities.model";
+import { SocketService } from "src/socket.service";
 
 @Injectable()
 export class TasksService {
@@ -17,7 +18,8 @@ export class TasksService {
     @InjectModel(Board) private boardRepository: typeof Board,
     @InjectModel(State) private stateRepository: typeof State,
     @InjectModel(Task) private taskRepository: typeof Task,
-    @InjectModel(UserTasks) private userTasksRepository: typeof UserTasks
+    @InjectModel(UserTasks) private userTasksRepository: typeof UserTasks,
+    private socketService: SocketService
   ) {}
   async getTasksInfo(userId: number, boardId: number, stateId: number) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -174,8 +176,9 @@ export class TasksService {
       userTasks.taskId = task.id;
       await userTasks.save();
     }
-
+    this.socketService.sendNewTaskUpdate(task);
     return task;
+    
   }
   async findMaxOrderInState(stateId: number): Promise<number> {
     const maxOrderTask = await this.taskRepository.findOne({

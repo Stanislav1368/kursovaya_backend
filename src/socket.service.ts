@@ -13,10 +13,18 @@ export class SocketService implements OnGatewayConnection {
   @WebSocketServer() server: Server;
 
   sendNewStateUpdate(newState: any) {
-
     this.server.emit("newState", newState);
   }
+
   sendStateDelete() {
     this.server.emit("deleteState");
+  }
+
+  sendNewTaskUpdate(newTask: any) {
+    this.server.emit("newTask", newTask);
+  }
+  
+  sendTaskDelete() {
+    this.server.emit("deleteTask");
   }
 }
