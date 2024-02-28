@@ -19,10 +19,67 @@ export class StatesService {
     private socketService: SocketService
   ) {}
 
+  async updateBoardWithColumns(boardId: number, newColumns: any[]) {
+    console.log(newColumns);
+    console.log(boardId);
+    const board = await this.boardRepository.findOne({
+      where: { id: boardId },
+    });
+    if (!board) {
+      throw new NotFoundException("Board not found");
+    }
+
+    const states: State[] = await this.stateRepository.findAll({
+      where: { boardId: boardId },
+      include: {
+        model: Task,
+      },
+    });
+
+    // Преобразуем данные для вывода только нужных полей
+    const statesData = states.map((state) => ({
+      id: state.id,
+      title: state.title,
+      tasks: state.tasks,
+    }));
+
+    console.log(statesData);
+
+    const allTasks = Object.values(newColumns).reduce((acc: any[], column: any) => {
+      // Извлекаем все задачи из текущей колонки и добавляем их в общий массив
+      acc.push(
+        ...Object.values(column)
+          .map((item: any) => item.tasks)
+          .flat()
+      );
+      return acc;
+    }, []);
+
+    // Полученный массив с всеми задачами
+    console.log(allTasks);
+    states?.forEach((state) => {
+      state.tasks.forEach(async (task) => {
+        const updatedTask = allTasks.find((t: any) => t.id === task.id);
+        if (updatedTask) {
+          console.log(task.stateId, task.order, task.title, updatedTask.stateId, updatedTask.order);
+          task.stateId = updatedTask.stateId;
+          task.order = updatedTask.order;
+          await task.save();
+          console.log(task);
+        }
+      });
+    });
+
+    // Сохраняешь обновленные задачи в базе данных
+
+    // //НУЖНО ПРОСТО ПЕРЕБРАТЬ ЗАДАЧИ И ЗАМЕНИТЬ У НИх ПОЛЯ!!!
+    return "Board updated successfully";
+  }
+
   async getStatesByBoardId(boardId: number) {
     const board = await this.boardRepository.findOne({
       where: { id: boardId },
-    }); 
+    });
     if (!board) {
       throw new NotFoundException("Board not found");
     }
@@ -42,13 +99,13 @@ export class StatesService {
             },
             {
               model: Priority,
-              attributes: ["name", "index", "color"],
+              attributes: ["name","color"],
             },
           ],
         },
       ],
     });
-    // console.log(states[0].tasks[0].users)
+    console.log(states);
     return states;
   }
   async getBoardStateById(userId: number, boardId: number, stateId: number) {
@@ -68,7 +125,7 @@ export class StatesService {
       where: { id: stateId },
       include: {
         model: Task,
-        as: "tasks"
+        as: "tasks",
       },
     });
     if (!state) {
@@ -90,7 +147,7 @@ export class StatesService {
     state.title = createStateDto.title;
     state.boardId = board.id;
     await state.save();
-    
+
     this.socketService.sendNewStateUpdate(state);
 
     return state;
@@ -111,11 +168,7 @@ export class StatesService {
       throw new NotFoundException("State not found");
     }
 
-    const tasks: Task[] = await this.taskService.getTasks(
-      userId,
-      boardId,
-      stateId
-    );
+    const tasks: Task[] = await this.taskService.getTasks(userId, boardId, stateId);
     for (const task of tasks) {
       await task.destroy();
     }
@@ -123,5 +176,17 @@ export class StatesService {
     await state.destroy();
     this.socketService.sendStateDelete();
     return { message: "State deleted successfully" };
+  }
+  async updateTitle(stateId: number, newTitle: string) {
+    console.log(stateId, newTitle);
+    const state = await this.stateRepository.findByPk(stateId);
+    console.log(state);
+    if (!state) {
+      throw new NotFoundException("Board not found");
+    }
+    console.log(stateId);
+    state.title = newTitle;
+    state.save();
+    return state;
   }
 }

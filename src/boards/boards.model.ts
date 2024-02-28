@@ -22,6 +22,9 @@ export class Board extends Model<Board, BoardCreationAttr> {
   @Column({ type: DataType.STRING, allowNull: false })
   title: string;
 
+  @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false })
+  favorite: boolean;
+
   @BelongsToMany(() => User, () => UserBoards)
   users: User[];
 

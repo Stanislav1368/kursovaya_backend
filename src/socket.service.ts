@@ -7,8 +7,8 @@ import { Server } from "socket.io";
 })
 export class SocketService implements OnGatewayConnection {
   handleConnection(client: any, ...args: any[]) {
-    console.log(client);
-    console.log("CONNECTED");
+    // console.log(client);
+    // console.log("CONNECTED");
   }
   @WebSocketServer() server: Server;
 

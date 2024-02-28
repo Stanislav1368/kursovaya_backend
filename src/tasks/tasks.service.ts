@@ -40,9 +40,9 @@ export class TasksService {
     }
 
     const tasks: Task[] = await this.taskRepository.findAll({
-      where: { stateId }
+      where: { stateId },
     });
-    console.log(tasks)
+    console.log(tasks);
     // const tasksWithUserData = tasks.map((task) => {
     //   const user = task.users[0]; // Получение первого связанного пользователя
     //   const userResp = user.name; // Имя пользователя
@@ -56,7 +56,7 @@ export class TasksService {
   }
   async getCheckedTasks(userId: number, boardId: number) {
     const tasks = await Task.findAll({
-      where: {isArchived: true},
+      where: { isArchived: true },
       include: [
         {
           model: State,
@@ -64,13 +64,13 @@ export class TasksService {
           include: [
             {
               model: Board,
-              where: { id: boardId }
-            }
-          ]
-        }
-      ]
+              where: { id: boardId },
+            },
+          ],
+        },
+      ],
     });
-    console.log(tasks)
+    console.log(tasks);
     return tasks;
   }
   async getTasks(userId: number, boardId: number, stateId: number) {
@@ -130,17 +130,19 @@ export class TasksService {
         },
         {
           model: Priority,
-          attributes: ["name", "index", "color"],
+          attributes: ["name",  "color"],
         },
       ],
     });
     if (!task) {
       throw new NotFoundException("Task not found");
     }
-    console.log(task.users[1])
+    console.log(task.users[1]);
     return task;
   }
-
+  async findTaskWithUsers(taskId: number) {
+    return await this.taskRepository.findByPk(taskId, { include: [{ model: User }] });
+  }
   async createTask(userId: number, boardId: number, stateId: number, createTaskDto: CreateTaskDto) {
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
@@ -170,15 +172,23 @@ export class TasksService {
     const userIds = createTaskDto.userIds; // Получаем массив идентификаторов пользователей
 
     for (const uid of userIds) {
-      console.log(uid, task.id)
+      console.log(task.order, task.id);
       const userTasks = new UserTasks();
       userTasks.userId = uid;
       userTasks.taskId = task.id;
       await userTasks.save();
     }
-    this.socketService.sendNewTaskUpdate(task);
-    return task;
-    
+    await task.$get("users");
+    // this.socketService.sendNewTaskUpdate(task);
+    // console.log(task);
+    // return task;
+
+    const taskWithUsers = await this.taskRepository.findByPk(task.id, { include: [{model: User}, {model: Priority}] });
+    this.socketService.sendNewTaskUpdate(taskWithUsers); // Отправляем обновленную задачу с пользователями
+
+    console.log(taskWithUsers); // Выводим объект задачи с пользователями
+
+    return taskWithUsers; // Возвращаем задачу с пользователями
   }
   async findMaxOrderInState(stateId: number): Promise<number> {
     const maxOrderTask = await this.taskRepository.findOne({
@@ -200,7 +210,6 @@ export class TasksService {
   }
 
   async updateTaskIsCompleted(userId: number, boardId: number, stateId: number, taskId: number, updateTaskDto: UpdateTaskDto) {
-
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
       throw new NotFoundException("User not found");
@@ -221,15 +230,13 @@ export class TasksService {
       throw new NotFoundException("Task not found");
     }
 
-
     task.isCompleted = updateTaskDto.isCompleted;
- 
+
     await task.save();
     return task;
   }
-  
-  async taskToArchive(userId: number, boardId: number, stateId: number, taskId: number, updateTaskDto: UpdateTaskDto) {
 
+  async taskToArchive(userId: number, boardId: number, stateId: number, taskId: number, updateTaskDto: UpdateTaskDto) {
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
       throw new NotFoundException("User not found");
@@ -256,7 +263,6 @@ export class TasksService {
     return task;
   }
   async updateTask(userId: number, boardId: number, stateId: number, taskId: number, updateTaskDto: UpdateTaskDto) {
-
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
       throw new NotFoundException("User not found");
@@ -284,7 +290,6 @@ export class TasksService {
       task.order = maxOrderInNewState === 0 ? 1 : maxOrderInNewState + 1;
       // await this.reorderTasksInState(oldStateId);
       // await this.reorderTasksInState(updateTaskDto.newStateId);
-
     }
 
     await task.save();
@@ -312,5 +317,18 @@ export class TasksService {
 
     await task.destroy();
     return { message: "Task deleted successfully" };
+  }
+
+  async moveTaskToState(taskId: number, newColumnId: number, newPosition: number): Promise<Task> {
+    const task = await this.taskRepository.findByPk(taskId);
+    console.log(newColumnId, newPosition);
+    if (!task) {
+      throw new Error("Card not found");
+    }
+    console.log(task.id, task.order, task.stateId);
+    task.order = newPosition;
+    task.stateId = newColumnId; // Обновляем принадлежность к списку
+    console.log(task.id, task.order, task.stateId);
+    return task.save();
   }
 }

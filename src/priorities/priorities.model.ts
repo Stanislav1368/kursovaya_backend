@@ -4,7 +4,6 @@ import { Board } from "src/boards/boards.model";
 
 interface PriorityCreationAttr {
   name: string;
-  index: number;
   color: string;
 }
 
@@ -16,8 +15,7 @@ export class Priority extends Model<Priority, PriorityCreationAttr> {
   @Column({ type: DataType.STRING, allowNull: false })
   name: string;
 
-  @Column({ type: DataType.INTEGER, allowNull: false })
-  index: number;
+
 
   @Column({ type: DataType.STRING, allowNull: false })
   color: string;

@@ -34,7 +34,6 @@ export class PrioritiesService {
   }
 
   async createPriority(boardId: number, createPriorityDto: CreatePriorityDto) {
-
     const board = await this.boardRepository.findByPk(boardId);
     if (!board) {
       throw new NotFoundException("board not found");
@@ -44,7 +43,6 @@ export class PrioritiesService {
 
     priority.name = createPriorityDto.name;
 
-    priority.index = createPriorityDto.index;
 
     priority.color = createPriorityDto.color;
 
