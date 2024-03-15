@@ -19,4 +19,5 @@ export class UserTasks extends Model<UserTasks> {
   @ForeignKey(() => Task)
   @Column({ type: DataType.INTEGER, allowNull: true })
   taskId: number;
+  
 }

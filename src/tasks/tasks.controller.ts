@@ -40,6 +40,17 @@ export class TasksController {
   ) {
     return this.tasksService.createTask(userId, boardId, stateId, createTaskDto);
   }
+
+  @Post("states/:stateId/tasks/:taskId/comment")
+  async commentTask(@Param("userId") userId: number, @Param("taskId") taskId: number, @Body() data: any) {
+    console.log(userId, taskId, data);
+    return this.tasksService.commentTask(userId, taskId, data.comment);
+  }
+  @Get("states/:stateId/tasks/:taskId/comment")
+  async getCommentsTask(@Param("taskId") taskId: number) {
+    console.log(taskId)
+    return this.tasksService.getCommentsTask(taskId);
+  }
   // - `PUT /users/{user_id}/boards/{board_id}/states/{state_id}/tasks/{task_id}` - обновление информации о задаче
   @Put("states/:stateId/tasks/:taskId")
   async updateTask(

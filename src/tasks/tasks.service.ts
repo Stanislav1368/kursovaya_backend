@@ -10,6 +10,7 @@ import { UserTasks } from "./user-tasks.model";
 import { IncludeThroughOptions } from "sequelize";
 import { Priority } from "src/priorities/priorities.model";
 import { SocketService } from "src/socket.service";
+import { Comments } from "./comments.model";
 
 @Injectable()
 export class TasksService {
@@ -126,11 +127,11 @@ export class TasksService {
         {
           model: User,
           through: { attributes: [] },
-          attributes: ["id", "email", "name"],
+          attributes: ["id", "email", "firstName", "lastName", "middleName"],
         },
         {
           model: Priority,
-          attributes: ["name",  "color"],
+          attributes: ["name", "color"],
         },
       ],
     });
@@ -183,12 +184,62 @@ export class TasksService {
     // console.log(task);
     // return task;
 
-    const taskWithUsers = await this.taskRepository.findByPk(task.id, { include: [{model: User}, {model: Priority}] });
+    const taskWithUsers = await this.taskRepository.findByPk(task.id, { include: [{ model: User }, { model: Priority }] });
     this.socketService.sendNewTaskUpdate(taskWithUsers); // Отправляем обновленную задачу с пользователями
 
     console.log(taskWithUsers); // Выводим объект задачи с пользователями
 
     return taskWithUsers; // Возвращаем задачу с пользователями
+  }
+
+  async commentTask(userId: number, taskId: number, comment: string) {
+    const user = await this.userRepository.findByPk(userId);
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    const task = await this.taskRepository.findByPk(taskId);
+    if (!task) {
+      throw new NotFoundException("Task not found");
+    }
+
+    const userTaskCom = new Comments();
+    console.log(comment);
+    userTaskCom.userId = userId;
+    userTaskCom.taskId = taskId;
+    userTaskCom.comment = comment;
+
+    // Сохраняем изменения в базе данных
+    await userTaskCom.save();
+    this.socketService.sendNewCommentUpdate(userTaskCom);
+    return userTaskCom;
+  }
+  async getCommentsTask(taskId: number) {
+    try {
+      console.log(taskId);
+      const task = await Task.findByPk(taskId);
+
+      if (!task) {
+        throw new NotFoundException("Task not found");
+      }
+      console.log(task);
+      const allComments = await Comments.findAll({
+        where: { taskId: taskId },
+      });
+      const userComments = allComments.map(async (comment) => {
+        const user = await User.findByPk(comment.userId);
+        return {
+          id: comment.id,
+          user: user,
+          comment: comment.comment,
+        };
+      });
+      console.log(Promise.all(userComments));
+      return Promise.all(userComments);
+    } catch (error) {
+      console.error(error);
+      throw new Error("Failed to get comments for the task");
+    }
   }
   async findMaxOrderInState(stateId: number): Promise<number> {
     const maxOrderTask = await this.taskRepository.findOne({

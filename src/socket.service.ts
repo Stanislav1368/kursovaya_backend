@@ -27,4 +27,8 @@ export class SocketService implements OnGatewayConnection {
   sendTaskDelete() {
     this.server.emit("deleteTask");
   }
+
+  sendNewCommentUpdate(newComment: any) {
+    this.server.emit("newComment", newComment);
+  }
 }

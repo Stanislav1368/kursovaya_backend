@@ -1,18 +1,16 @@
-
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table, BelongsToMany } from "sequelize-typescript";
 import { Board } from "src/boards/boards.model";
 import { UserBoards } from "src/boards/user-boards.model";
+import { Comments } from "src/tasks/comments.model";
 import { Task } from "src/tasks/tasks.model";
 import { UserTasks } from "src/tasks/user-tasks.model";
 
-
-
 interface UserCreationAttr {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
-@Table({ tableName: 'users' })
+@Table({ tableName: "users" })
 export class User extends Model<User, UserCreationAttr> {
   @Column({ type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true })
   id: number;
@@ -21,7 +19,13 @@ export class User extends Model<User, UserCreationAttr> {
   email: string;
 
   @Column({ type: DataType.STRING, allowNull: true })
-  name: string;
+  firstName: string;
+
+  @Column({ type: DataType.STRING, allowNull: true })
+  lastName: string;
+
+  @Column({ type: DataType.STRING, allowNull: true })
+  middleName: string;
 
   @Column({ type: DataType.STRING, allowNull: false })
   password: string;
@@ -33,7 +37,7 @@ export class User extends Model<User, UserCreationAttr> {
   banReason: string;
 
   @Column({ type: DataType.STRING, allowNull: true })
-  image: string; 
+  image: string;
 
   @BelongsToMany(() => Board, () => UserBoards)
   boards: Board[];

@@ -17,6 +17,7 @@ import { UserTasks } from "./tasks/user-tasks.model";
 import { PrioritiesModule } from "./priorities/priorities.module";
 import { Priority } from "./priorities/priorities.model";
 import { SocketService } from "./socket.service";
+import { Comments } from "./tasks/comments.model";
 
 @Module({
   controllers: [],
@@ -32,7 +33,7 @@ import { SocketService } from "./socket.service";
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Board, UserBoards, UserTasks, State, Task, Role, Priority],
+      models: [User, Board, UserBoards, UserTasks, State, Task, Role, Priority, Comments],
       autoLoadModels: true,
       synchronize: true,
     }),

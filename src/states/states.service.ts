@@ -9,6 +9,7 @@ import { Board } from "../boards/boards.model";
 import { State } from "./states.model";
 import { Priority } from "src/priorities/priorities.model";
 import { SocketService } from "src/socket.service";
+import { UserTasks } from "src/tasks/user-tasks.model";
 @Injectable()
 export class StatesService {
   constructor(
@@ -83,30 +84,31 @@ export class StatesService {
     if (!board) {
       throw new NotFoundException("Board not found");
     }
-
-    const states: State[] = await this.stateRepository.findAll({
-      where: { boardId },
-      include: [
-        {
-          model: Task,
-          as: "tasks",
-          // attributes: ["id", "title", "description", "stateId", "order"],
-          include: [
-            {
-              model: User,
-              through: { attributes: [] },
-              attributes: ["id", "email", "name"],
-            },
-            {
-              model: Priority,
-              attributes: ["name","color"],
-            },
-          ],
-        },
-      ],
-    });
-    console.log(states);
-    return states;
+    try {
+      const states: State[] = await this.stateRepository.findAll({
+        where: { boardId },
+        include: [
+          {
+            model: Task,
+            as: "tasks",
+            include: [
+              {
+                model: User,
+                through: { attributes: [] },
+                attributes: ["id", "email", "firstName", "lastName", "middleName"],
+              },
+              {
+                model: Priority,
+                attributes: ["name", "color"],
+              },
+            ],
+          },
+        ],
+      });
+      return states;
+    } catch (error) {
+      console.log(error);
+    }
   }
   async getBoardStateById(userId: number, boardId: number, stateId: number) {
     const user = await this.userRepository.findOne({ where: { id: userId } });

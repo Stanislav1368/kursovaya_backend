@@ -8,11 +8,12 @@ import { Task } from "./tasks.model";
 import { State } from "src/states/states.model";
 import { UserTasks } from "./user-tasks.model";
 import { SocketService } from "src/socket.service";
+import { Comments } from "./comments.model";
 
 @Module({
   controllers: [TasksController],
   providers: [TasksService, SocketService],
-  imports: [SequelizeModule.forFeature([User, Board, State, Task, UserTasks])],
+  imports: [SequelizeModule.forFeature([User, Board, State, Task, UserTasks, Comments])],
   exports: [TasksService],
 })
 export class TasksModule {}

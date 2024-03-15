@@ -4,6 +4,7 @@ import { State } from "src/states/states.model";
 import { User } from "src/users/user.model";
 import { UserTasks } from "./user-tasks.model";
 import { Priority } from "src/priorities/priorities.model";
+import { Comments } from "./comments.model";
 
 interface TaskCreationAttr {
   title: string;
@@ -21,22 +22,22 @@ export class Task extends Model<Task, TaskCreationAttr> {
   @Column({ type: DataType.STRING, allowNull: false })
   description: string;
 
-  @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false }) 
+  @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false })
   isCompleted: boolean;
-  
-  @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false }) 
+
+  @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false })
   isArchived: boolean;
 
-  @BelongsTo(() => State, { onDelete: 'CASCADE' })
+  @BelongsTo(() => State, { onDelete: "CASCADE" })
   state: State;
 
   @Column({ type: DataType.INTEGER, allowNull: true })
   order: number;
 
-  @Column({ type: DataType.DATE, allowNull: true }) 
-  startDate: Date
+  @Column({ type: DataType.DATE, allowNull: true })
+  startDate: Date;
 
-  @Column({ type: DataType.DATE, allowNull: true }) 
+  @Column({ type: DataType.DATE, allowNull: true })
   endDate: Date;
 
   @ForeignKey(() => State)
@@ -45,6 +46,8 @@ export class Task extends Model<Task, TaskCreationAttr> {
 
   @BelongsToMany(() => User, () => UserTasks)
   users: User[];
+
+
 
   @BelongsTo(() => Priority)
   priority: Priority;

@@ -20,62 +20,66 @@ export class UsersService {
 
   async createUser(dto: CreateUserDto) {
     const user = await this.userRepository.create(dto);
-    user.name = "MockName" + user.id;
+    user.firstName = dto.firstName;
+    user.lastName = dto.lastName;
+    user.middleName = dto.middleName;
     await user.save();
 
     return user;
   }
 
-  async getAllUsersByBoard(boardId: number) { 
-    const users = await User.findAll({ 
-      attributes: ["id", "email", "name"], 
-      include: [ 
-        { 
-          model: Board, 
-          through: { 
-            model: UserBoards, 
-            attributes: [], 
+  async getAllUsersByBoard(boardId: number) {
+    const users = await User.findAll({
+      attributes: ["id", "email", "firstName", "lastName", "middleName"],
+      include: [
+        {
+          model: Board,
+          through: {
+            model: UserBoards,
+            attributes: [],
           } as IncludeThroughOptions,
-          where: { id: boardId }, 
-          attributes: [], 
-        }, 
-      ], 
-      group: ["User.id", "User.email", "User.name"], 
-    }); 
-  
-    const usersWithRole = await Promise.all(users.map(async (user) => { 
-      const userBoard = await this.userBoardsRepository.findOne({ 
-        where: { userId: user.id, boardId: boardId } 
-      }); 
-      const role = await this.roleRepository.findOne({ 
-        where: {id: userBoard.roleId, boardId: boardId } 
-      }); 
+          where: { id: boardId },
+          attributes: [],
+        },
+      ],
+      group: ["User.id", "User.email", "User.firstName", "User.lastName", "User.middleName"],
+    });
 
-      const userInfo = { 
-        id: user.id, 
-        name: user.name, 
-        email: user.email, 
-        isOwner: userBoard.isOwner,
-        roleId: userBoard.roleId,
-        roleName: role?.name,
-        canEditBoardInfo: role?.canEditBoardInfo,
-        canAddColumns: role?.canAddColumns,
-        canAddUsers: role?.canAddUsers,
-        canAddPriorities: role?.canAddPriorities,
-        canCreateRoles: role?.canCreateRoles,
-        canAccessStatistics: role?.canAccessStatistics,
-        canCreateReports: role?.canCreateReports,
-        canAccessArchive: role?.canAccessArchive,
+    const usersWithRole = await Promise.all(
+      users.map(async (user) => {
+        const userBoard = await this.userBoardsRepository.findOne({
+          where: { userId: user.id, boardId: boardId },
+        });
+        const role = await this.roleRepository.findOne({
+          where: { id: userBoard.roleId, boardId: boardId },
+        });
 
-      }; 
+        const userInfo = {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          middleName: user.middleName,
+          email: user.email,
+          isOwner: userBoard.isOwner,
+          roleId: userBoard.roleId,
+          roleName: role?.name,
+          canEditBoardInfo: role?.canEditBoardInfo,
+          canAddColumns: role?.canAddColumns,
+          canAddUsers: role?.canAddUsers,
+          canAddPriorities: role?.canAddPriorities,
+          canCreateRoles: role?.canCreateRoles,
+          canAccessStatistics: role?.canAccessStatistics,
+          canCreateReports: role?.canCreateReports,
+          canAccessArchive: role?.canAccessArchive,
+        };
 
-      return userInfo; 
-    })); 
-  
-    
-    return usersWithRole; 
+        return userInfo;
+      })
+    );
+
+    return usersWithRole;
   }
-  
+
   async getRoleOnBoard(userId: number, boardId: number) {
     const userBoard = this.userBoardsRepository.findOne({
       where: { userId: userId, boardId: boardId },
@@ -83,37 +87,35 @@ export class UsersService {
     return (await userBoard).isOwner;
   }
 
-
   async getCurrentRole(userId: number, boardId: number) {
     const userBoard = this.userBoardsRepository.findOne({
       where: { userId: userId, boardId: boardId },
     });
-   
+
     const role = this.roleRepository.findOne({
-      where: {id: (await userBoard).roleId}
-    })
+      where: { id: (await userBoard).roleId },
+    });
 
-    return role;  
+    return role;
   }
 
-
-  async updateRoleOnBoard(userId: number, boardId: number, updatePrivilegeDto: UpdatePrivilegeDto) { 
-
-    const userBoard = await this.userBoardsRepository.findOne({ 
-      where: { userId: userId, boardId: boardId }, 
-    }); 
-    userBoard.isOwner = updatePrivilegeDto.newPrivilege ? true : false; 
-    await userBoard.save(); 
-    return userBoard.isOwner; 
+  async updateRoleOnBoard(userId: number, boardId: number, updatePrivilegeDto: UpdatePrivilegeDto) {
+    const userBoard = await this.userBoardsRepository.findOne({
+      where: { userId: userId, boardId: boardId },
+    });
+    userBoard.isOwner = updatePrivilegeDto.newPrivilege ? true : false;
+    await userBoard.save();
+    return userBoard.isOwner;
   }
-  async updateRole(userId: number, boardId: number, updateRoleDto: UpdateRoleDto) { 
-    const userBoard = await this.userBoardsRepository.findOne({ 
-      where: { userId: userId, boardId: boardId }, 
-    }); 
-
+  async updateRole(userId: number, boardId: number, updateRoleDto: UpdateRoleDto) {
+    const userBoard = await this.userBoardsRepository.findOne({
+      where: { userId: userId, boardId: boardId },
+    });
+    console.log(updateRoleDto.roleId);
     userBoard.roleId = updateRoleDto.roleId;
-    await userBoard.save(); 
-    return userBoard.roleId; 
+    await userBoard.save();
+    console.log(userBoard);
+    return userBoard.roleId;
   }
 
   async getAllUsers() {

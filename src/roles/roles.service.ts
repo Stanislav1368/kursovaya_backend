@@ -42,17 +42,18 @@ export class RolesService {
     const role = new Role();
     role.name = createRoleDto.name;
 
-    role.canEditBoardInfo = createRoleDto.canEditBoardInfo;
-    role.canAddColumns = createRoleDto.canAddColumns;
-    role.canAddUsers = createRoleDto.canAddUsers;
-    role.canAddPriorities = createRoleDto.canAddPriorities;
-    role.canCreateRoles = createRoleDto.canCreateRoles;
-    role.canAccessStatistics = createRoleDto.canAccessStatistics;
-    role.canCreateReports = createRoleDto.canCreateReports;
-    role.canAccessArchive = createRoleDto.canAccessArchive;
+    role.canEditBoardInfo = createRoleDto.canEditBoardInfo ?? false;
+    role.canAddColumns = createRoleDto.canAddColumns ?? false;
+    role.canAddUsers = createRoleDto.canAddUsers ?? false;
+    role.canAddPriorities = createRoleDto.canAddPriorities ?? false;
+    role.canCreateRoles = createRoleDto.canCreateRoles ?? false;
+    role.canAccessStatistics = createRoleDto.canAccessStatistics ?? false;
+    role.canCreateReports = createRoleDto.canCreateReports ?? false;
+    role.canAccessArchive = createRoleDto.canAccessArchive ?? false;
+
     role.boardId = board.id;
     await role.save();
-
+    console.log(role);
     return role;
   }
 }
