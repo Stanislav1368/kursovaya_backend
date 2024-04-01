@@ -36,6 +36,14 @@ export class BoardsController {
   async addUserInBoard(@Param("userId") userId: number, @Param("boardId") boardId: number) {
     return this.boardsService.addUserInBoard(userId, boardId);
   }
+  @Post(":boardId/invite")
+  async inviteUser(@Param("userId") userId: number, @Param("boardId") boardId: number) {
+    return this.boardsService.inviteUser(userId, boardId);
+  }
+  @Delete(":boardId/deleteUser")
+  async deleteUserFromBoard(@Param("userId") userId: number, @Param("boardId") boardId: number) {
+    return this.boardsService.deleteUserFromBoard(userId, boardId);
+  }
 
   @Delete(":boardId")
   async deleteBoard(@Param("userId") userId: number, @Param("boardId") boardId: number) {

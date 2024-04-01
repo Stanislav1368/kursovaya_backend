@@ -164,8 +164,8 @@ export class TasksService {
     task.description = createTaskDto.description;
     task.stateId = state.id;
     task.priorityId = createTaskDto.priorityId;
-    task.startDate = createTaskDto.startDate;
-    task.endDate = createTaskDto.endDate;
+    task.startDate = createTaskDto.dates[0];
+    task.endDate = createTaskDto.dates[1];
     const maxOrder = await this.findMaxOrderInState(stateId);
     task.order = maxOrder + 1;
     await task.save();
@@ -173,7 +173,6 @@ export class TasksService {
     const userIds = createTaskDto.userIds; // Получаем массив идентификаторов пользователей
 
     for (const uid of userIds) {
-      console.log(task.order, task.id);
       const userTasks = new UserTasks();
       userTasks.userId = uid;
       userTasks.taskId = task.id;
@@ -313,38 +312,53 @@ export class TasksService {
     await task.save();
     return task;
   }
-  async updateTask(userId: number, boardId: number, stateId: number, taskId: number, updateTaskDto: UpdateTaskDto) {
+  async updateTask(userId: number, taskId: number, updateTaskDto: any) {
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
       throw new NotFoundException("User not found");
-    }
-
-    const board = await this.boardRepository.findByPk(boardId);
-    if (!board) {
-      throw new NotFoundException("Board not found");
-    }
-
-    const state = await this.stateRepository.findByPk(stateId);
-    if (!state) {
-      throw new NotFoundException("State not found");
     }
 
     const task = await this.taskRepository.findByPk(taskId);
     if (!task) {
       throw new NotFoundException("Task not found");
     }
-
-    const oldStateId = task.stateId;
-    task.stateId = updateTaskDto.newStateId;
-    if (oldStateId !== updateTaskDto.newStateId) {
-      const maxOrderInNewState = await this.findMaxOrderInState(updateTaskDto.newStateId);
-      task.order = maxOrderInNewState === 0 ? 1 : maxOrderInNewState + 1;
-      // await this.reorderTasksInState(oldStateId);
-      // await this.reorderTasksInState(updateTaskDto.newStateId);
-    }
+    console.log(updateTaskDto);
+    task.title = updateTaskDto.title || task.title;
+    task.description = updateTaskDto.description || task.description;
+    task.priorityId = updateTaskDto.priorityId || task.priorityId;
+    task.startDate = updateTaskDto.dates[0] || task.startDate;
+    task.endDate = updateTaskDto.dates[1] || task.endDate;
 
     await task.save();
-    return task;
+    console.log(task.title);
+    // const userIds = updateTaskDto.userIds; // Получаем массив идентификаторов пользователей
+
+    // // Получаем существующие связи пользователя с задачей
+    // const existingUserTasks = await UserTasks.findAll({ where: { taskId } });
+
+    // // Обновляем существующие связи или добавляем новые
+    // for (const uid of userIds) {
+    //   const existingUserTask = existingUserTasks.find(ut => ut.userId === uid);
+    //   if (existingUserTask) {
+    //     // Если связь уже существует, необходимо обновить её
+    //     existingUserTask.userId = uid;
+    //     existingUserTask.taskId = taskId;
+    //     await existingUserTask.save();
+    //   } else {
+    //     // Если связь не существует, добавляем новую
+    //     const newUserTask = new UserTasks();
+    //     newUserTask.userId = uid;
+    //     newUserTask.taskId = taskId;
+    //     await newUserTask.save();
+    //   }
+    // }
+
+    const updatedTask = await this.taskRepository.findByPk(taskId, { include: [{ model: User }, { model: Priority }] });
+    // this.socketService.sendUpdatedTaskUpdate(updatedTask); // Отправляем обновленную задачу с пользователями
+
+    console.log(updatedTask); // Выводим объект задачи с пользователями
+
+    return updatedTask; // Возвращаем обновленную задачу с пользователями
   }
   async deleteTaskById(userId: number, boardId: number, stateId: number, taskId: number) {
     const user = await this.userRepository.findByPk(userId);

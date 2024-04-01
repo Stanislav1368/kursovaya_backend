@@ -23,12 +23,16 @@ export class SocketService implements OnGatewayConnection {
   sendNewTaskUpdate(newTask: any) {
     this.server.emit("newTask", newTask);
   }
-  
+
   sendTaskDelete() {
     this.server.emit("deleteTask");
   }
 
   sendNewCommentUpdate(newComment: any) {
     this.server.emit("newComment", newComment);
+  }
+
+  sendInvite(userId: number) {
+    this.server.emit("sendInvite", userId);
   }
 }

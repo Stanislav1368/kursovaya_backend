@@ -10,14 +10,12 @@ import { StatesModule } from "src/states/states.module";
 import { RolesService } from "src/roles/roles.service";
 import { State } from "src/states/states.model";
 import { Task } from "src/tasks/tasks.model";
+import { SocketService } from "src/socket.service";
 
 @Module({
   controllers: [BoardsController],
-  providers: [BoardsService],
-  imports: [
-    SequelizeModule.forFeature([User, Board, State, UserBoards]),
-    StatesModule
-  ],
+  providers: [BoardsService, SocketService],
+  imports: [SequelizeModule.forFeature([User, Board, State, UserBoards]), StatesModule],
   exports: [BoardsService],
 })
 export class BoardsModule {}

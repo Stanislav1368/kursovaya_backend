@@ -13,11 +13,12 @@ import { Role } from 'src/roles/roles.model';
 import { UserTasks } from 'src/tasks/user-tasks.model';
 import { StatesModule } from 'src/states/states.module';
 import { Comments } from 'src/tasks/comments.model';
+import { SocketService } from 'src/socket.service';
 
 
 @Module({
   controllers: [UsersController, BoardsController],
-  providers: [UsersService, BoardsService],
+  providers: [UsersService, BoardsService, SocketService],
   imports: [
     SequelizeModule.forFeature([User, Board, UserBoards, UserTasks, Role, Comments]),
     forwardRef(() => AuthModule), StatesModule

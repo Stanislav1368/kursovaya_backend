@@ -58,9 +58,9 @@ export class TasksController {
     @Param("boardId") boardId: number,
     @Param("stateId") stateId: number,
     @Param("taskId") taskId: number,
-    @Body() updateTaskDto: UpdateTaskDto
+    @Body() updateTaskDto: CreateTaskDto
   ) {
-    return this.tasksService.updateTask(userId, boardId, stateId, taskId, updateTaskDto);
+    return this.tasksService.updateTask(userId, taskId, updateTaskDto);
   }
   @Put("states/:stateId/tasks/:taskId/archive")
   async taskToArchive(

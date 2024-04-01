@@ -3,6 +3,6 @@ export class CreateTaskDto {
     readonly description: string;
     readonly userIds: number[];   
     readonly priorityId: number;
-    readonly startDate: Date;
-    readonly endDate: Date;
+    readonly dates: Date[];
+
 }

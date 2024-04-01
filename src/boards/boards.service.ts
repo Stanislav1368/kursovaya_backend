@@ -9,15 +9,16 @@ import { UpdateBoardDto } from "./dto/update-board.dto";
 import { StatesService } from "src/states/states.service";
 import { Task } from "src/tasks/tasks.model";
 import { IncludeThroughOptions } from "sequelize";
+import { SocketService } from "src/socket.service";
 
 @Injectable()
 export class BoardsService {
   constructor(
     @InjectModel(User) private userRepository: typeof User,
     @InjectModel(Board) private boardRepository: typeof Board,
-
     @InjectModel(UserBoards) private userBoardsRepository: typeof UserBoards,
-    private statesService: StatesService
+    private statesService: StatesService,
+    private socketService: SocketService
   ) {}
 
   async updateBoardWithColumns(boardId: number, newColumns: any[]) {
@@ -109,6 +110,31 @@ export class BoardsService {
     const userboards = await UserBoards.create({ userId, boardId: board.id, isOwner: false });
     return userboards;
   }
+
+  async deleteUserFromBoard(userId: number, boardId: number) {
+    // Проверяем существует ли пользователь
+    const user = await this.userRepository.findByPk(userId);
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    // Проверяем существует ли доска
+    const board = await this.boardRepository.findByPk(boardId);
+    if (!board) {
+      throw new NotFoundException("Board not found");
+    }
+
+    // Удаляем пользователя из доски
+    const deletedUserBoard = await UserBoards.destroy({ where: { userId, boardId } });
+
+    // Проверяем успешно ли прошло удаление
+    if (!deletedUserBoard) {
+      throw new Error("Failed to delete user from board");
+    }
+
+    return "User successfully removed from the board";
+  }
+
   async deleteBoard(userId: number, boardId: number) {
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
@@ -128,5 +154,10 @@ export class BoardsService {
       await state.destroy();
     }
     await board.destroy();
+  }
+
+  async inviteUser(userId: number, boardId: number) {
+    console.log(userId, boardId);
+   
   }
 }

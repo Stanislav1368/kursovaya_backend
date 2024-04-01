@@ -63,14 +63,13 @@ export class UsersService {
           isOwner: userBoard.isOwner,
           roleId: userBoard.roleId,
           roleName: role?.name,
-          canEditBoardInfo: role?.canEditBoardInfo,
-          canAddColumns: role?.canAddColumns,
-          canAddUsers: role?.canAddUsers,
-          canAddPriorities: role?.canAddPriorities,
-          canCreateRoles: role?.canCreateRoles,
-          canAccessStatistics: role?.canAccessStatistics,
-          canCreateReports: role?.canCreateReports,
+          canCreateRole: role?.canCreateRole,
+          canEditRole: role?.canEditRole,
           canAccessArchive: role?.canAccessArchive,
+          canCreatePriorities: role?.canCreatePriorities,
+          canAddColumns: role?.canAddColumns,
+          canAddTasks: role?.canAddTasks,
+          canInviteUsers: role?.canInviteUsers,
         };
 
         return userInfo;
@@ -96,6 +95,7 @@ export class UsersService {
       where: { id: (await userBoard).roleId },
     });
 
+    console.log(role);
     return role;
   }
 
@@ -111,9 +111,14 @@ export class UsersService {
     const userBoard = await this.userBoardsRepository.findOne({
       where: { userId: userId, boardId: boardId },
     });
-    console.log(updateRoleDto.roleId);
-    userBoard.roleId = updateRoleDto.roleId;
+    if (updateRoleDto.roleId === 0) {
+      userBoard.roleId = null; // Устанавливаем roleId в null, когда roleId в DTO равен 'guest'
+    } else {
+      userBoard.roleId = updateRoleDto.roleId; // Иначе устанавливаем значение из DTO
+    }
+
     await userBoard.save();
+
     console.log(userBoard);
     return userBoard.roleId;
   }
@@ -134,10 +139,12 @@ export class UsersService {
   }
 
   async getUserByEmail(email: string) {
+    console.log(email);
     const user = await this.userRepository.findOne({
       where: { email },
       include: { all: true },
     });
+    console.log(user);
     return user;
   }
 

@@ -1,21 +1,19 @@
 export class CreateRoleDto {
   readonly name: string;
 
-  readonly canEditBoardInfo: boolean;
+  readonly canCreateRole: boolean;
 
-  readonly canAddColumns: boolean;
-
-  readonly canAddUsers: boolean;
-
-  readonly canAddPriorities: boolean;
-
-  readonly canCreateRoles: boolean;
-
-  readonly canAccessStatistics: boolean;
-
-  readonly canCreateReports: boolean;
-
+  readonly canEditRole: boolean;
+  
   readonly canAccessArchive: boolean;
+  
+  readonly canCreatePriorities: boolean;
+  
+  readonly canAddColumns: boolean;
+  
+  readonly canAddTasks: boolean;
+  
+  readonly canInviteUsers: boolean;
 }
 
 
