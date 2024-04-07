@@ -17,7 +17,7 @@ export class AuthService {
       const user = await this.validateUser(userDto);
       return this.generateToken(user);
     } catch {
-      console.log(userDto);
+
       throw new UnauthorizedException({ message: "Некорректная почта или пароль" });
     }
   }

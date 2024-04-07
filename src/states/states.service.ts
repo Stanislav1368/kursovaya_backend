@@ -10,6 +10,7 @@ import { State } from "./states.model";
 import { Priority } from "src/priorities/priorities.model";
 import { SocketService } from "src/socket.service";
 import { UserTasks } from "src/tasks/user-tasks.model";
+import { SubTask } from "src/subtasks/subtasks.model";
 @Injectable()
 export class StatesService {
   constructor(
@@ -101,10 +102,16 @@ export class StatesService {
                 model: Priority,
                 attributes: ["name", "color"],
               },
+              {
+                model: SubTask,
+                as: "subTasks",
+                attributes: ["id", "title", "isCompleted"],
+              },
             ],
           },
         ],
       });
+      console.log(states);
       return states;
     } catch (error) {
       console.log(error);

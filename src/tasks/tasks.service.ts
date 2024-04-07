@@ -52,7 +52,7 @@ export class TasksService {
 
     //   return { userResp, title, description };
     // });
-
+    console.log(tasks);
     return tasks;
   }
   async getCheckedTasks(userId: number, boardId: number) {
@@ -170,7 +170,7 @@ export class TasksService {
     task.order = maxOrder + 1;
     await task.save();
 
-    const userIds = createTaskDto.userIds; // Получаем массив идентификаторов пользователей
+    const userIds = createTaskDto.userIds;
 
     for (const uid of userIds) {
       const userTasks = new UserTasks();
@@ -283,6 +283,11 @@ export class TasksService {
     task.isCompleted = updateTaskDto.isCompleted;
 
     await task.save();
+    const title = `Задача завершена`;
+    const message = `Задача ${task.title} завершена`;
+
+    this.socketService.sendNotif(null, title, message, boardId);
+
     return task;
   }
 

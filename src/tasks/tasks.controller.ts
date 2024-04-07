@@ -16,11 +16,12 @@ export class TasksController {
   ) {
     return this.tasksService.getCheckedTasks(userId, boardId);
   }
+  
   @Get("states/:stateId/tasks")
   async getTasksInfo(@Param("userId") userId: number, @Param("boardId") boardId: number, @Param("stateId") stateId: number) {
     return this.tasksService.getTasksInfo(userId, boardId, stateId);
   }
-  // - `GET /users/{user_id}/boards/{board_id}/states/{state_id}/tasks/{task_id}` - получение информации о конкретной задаче
+
   @Get("states/:stateId/tasks/:taskId")
   async getTaskById(
     @Param("userId") userId: number,
@@ -48,7 +49,7 @@ export class TasksController {
   }
   @Get("states/:stateId/tasks/:taskId/comment")
   async getCommentsTask(@Param("taskId") taskId: number) {
-    console.log(taskId)
+    console.log(taskId);
     return this.tasksService.getCommentsTask(taskId);
   }
   // - `PUT /users/{user_id}/boards/{board_id}/states/{state_id}/tasks/{task_id}` - обновление информации о задаче

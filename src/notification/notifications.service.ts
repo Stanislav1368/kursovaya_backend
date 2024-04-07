@@ -12,7 +12,21 @@ export class NotificationsService {
     private socketService: SocketService
   ) {}
 
-  async getAllNotifications(userId: number) {
+  async getAllNotifications(boardId: number) {
+    const notifications = await this.notificationRepository.findAll({ where: { boardId: boardId } });
+    return notifications;
+  }
+
+  async createNotification(title: string, message: string, userId: number, boardId: number, fromUserId: number) {
+
+  }
+
+  async deleteNotification(userId: number, notificationId: number) {
+    
+  }
+
+
+  async getAllInviteNotifications(userId: number) {
     const notifications = await this.notificationRepository.findAll({ where: { userId } });
     console.log(notifications);
 
@@ -37,7 +51,7 @@ export class NotificationsService {
     return notifWithInviter;
   }
 
-  async createNotification(title: string, message: string, userId: number, boardId: number, fromUserId: number) {
+  async createInviteNotification(title: string, message: string, userId: number, boardId: number, fromUserId: number) {
     try {
       const user = await User.findByPk(userId);
       if (!user) {
@@ -57,14 +71,14 @@ export class NotificationsService {
       notif.fromUserId = fromUserId;
       await notif.save();
 
-      this.socketService.sendInvite(userId);
+      this.socketService.sendNotif(userId, title, message, null);
     } catch (error) {
       console.error("Error creating notification:", error);
       throw new Error("Failed to create notification");
     }
   }
 
-  async deleteNotification(userId: number, notificationId: number) {
+  async deleteInviteNotification(userId: number, notificationId: number) {
     const notification = await this.notificationRepository.findOne({ where: { id: notificationId, userId } });
     if (!notification) {
       throw new NotFoundException(`Notification with id ${notificationId} not found for user with id ${userId}`);

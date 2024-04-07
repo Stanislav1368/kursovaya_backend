@@ -20,6 +20,8 @@ import { SocketService } from "./socket.service";
 import { Comments } from "./tasks/comments.model";
 import { NotificationsModule } from "./notification/notifications.module";
 import { Notification } from "./notification/notifications.model";
+import { SubTask } from "./subtasks/subtasks.model";
+import { SubTasksModule } from "./subtasks/subtasks.module";
 
 @Module({
   controllers: [],
@@ -35,7 +37,7 @@ import { Notification } from "./notification/notifications.model";
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Board, UserBoards, UserTasks, State, Task, Role, Priority, Comments, Notification],
+      models: [User, Board, UserBoards, UserTasks, State, Task, SubTask, Role, Priority, Comments, Notification],
       autoLoadModels: true,
       synchronize: true,
     }),
@@ -45,7 +47,7 @@ import { Notification } from "./notification/notifications.model";
     StatesModule,
     TasksModule,
     RolesModule,
-    PrioritiesModule, NotificationsModule
+    PrioritiesModule, NotificationsModule, SubTasksModule
   ],
 })
 export class AppModule {}

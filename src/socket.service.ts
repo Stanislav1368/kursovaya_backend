@@ -32,7 +32,7 @@ export class SocketService implements OnGatewayConnection {
     this.server.emit("newComment", newComment);
   }
 
-  sendInvite(userId: number) {
-    this.server.emit("sendInvite", userId);
+  sendNotif(userId: number, title: string, message: string, boardId: number) {
+    this.server.emit("sendNotif", userId, title, message, boardId);
   }
 }

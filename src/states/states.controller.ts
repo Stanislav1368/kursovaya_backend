@@ -14,7 +14,7 @@ export class StatesController {
 
   @Put("/update")
   async updateBoardWithColumns(@Param("boardId") boardId: number, @Body() newColumns: any) {
-    console.log(newColumns);
+
     return this.statesService.updateBoardWithColumns(boardId, newColumns);
   }
 
