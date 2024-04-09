@@ -4,6 +4,7 @@ import { UserBoards } from "./user-boards.model";
 import { State } from "src/states/states.model";
 import { Role } from "src/roles/roles.model";
 import { Priority } from "src/priorities/priorities.model";
+import { Notification } from "src/notification/notifications.model";
 
 interface BoardCreationAttr {
   title: string;
@@ -36,4 +37,7 @@ export class Board extends Model<Board, BoardCreationAttr> {
 
   @HasMany(() => Priority)
   priorities: Priority[];
+
+  @HasMany(() => Notification)
+  notifications: Notification[];
 }

@@ -6,6 +6,7 @@ import { UserTasks } from "./user-tasks.model";
 import { Priority } from "src/priorities/priorities.model";
 import { Comments } from "./comments.model";
 import { SubTask } from "src/subtasks/subtasks.model";
+import { Notification } from "src/notification/notifications.model";
 
 interface TaskCreationAttr {
   title: string;
@@ -48,8 +49,6 @@ export class Task extends Model<Task, TaskCreationAttr> {
   @BelongsToMany(() => User, () => UserTasks)
   users: User[];
 
-
-
   @BelongsTo(() => Priority)
   priority: Priority;
 
@@ -59,4 +58,7 @@ export class Task extends Model<Task, TaskCreationAttr> {
 
   @HasMany(() => SubTask)
   subTasks: SubTask[];
+
+  @HasMany(() => Notification)
+  notifications: Notification[];
 }

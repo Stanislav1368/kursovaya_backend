@@ -22,6 +22,8 @@ import { NotificationsModule } from "./notification/notifications.module";
 import { Notification } from "./notification/notifications.model";
 import { SubTask } from "./subtasks/subtasks.model";
 import { SubTasksModule } from "./subtasks/subtasks.module";
+import { InvitationModule } from './invitation/invitation.module';
+import { Invitation } from "./invitation/invitation.model";
 
 @Module({
   controllers: [],
@@ -37,7 +39,7 @@ import { SubTasksModule } from "./subtasks/subtasks.module";
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Board, UserBoards, UserTasks, State, Task, SubTask, Role, Priority, Comments, Notification],
+      models: [User, Board, UserBoards, UserTasks, State, Task, SubTask, Role, Priority, Comments, Notification, Invitation],
       autoLoadModels: true,
       synchronize: true,
     }),
@@ -47,7 +49,7 @@ import { SubTasksModule } from "./subtasks/subtasks.module";
     StatesModule,
     TasksModule,
     RolesModule,
-    PrioritiesModule, NotificationsModule, SubTasksModule
+    PrioritiesModule, NotificationsModule, SubTasksModule, InvitationModule
   ],
 })
 export class AppModule {}

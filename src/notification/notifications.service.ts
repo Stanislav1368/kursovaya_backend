@@ -4,6 +4,7 @@ import { Notification } from "./notifications.model";
 import { SocketService } from "src/socket.service";
 import { User } from "src/users/user.model";
 import { Board } from "src/boards/boards.model";
+import { Task } from "src/tasks/tasks.model";
 
 @Injectable()
 export class NotificationsService {
@@ -13,77 +14,55 @@ export class NotificationsService {
   ) {}
 
   async getAllNotifications(boardId: number) {
-    const notifications = await this.notificationRepository.findAll({ where: { boardId: boardId } });
+    const notifications = await this.notificationRepository.findAll({
+      where: { boardId: boardId },
+      include: [
+        {
+          model: Task,
+        },
+        {
+          model: User,
+        },
+        {
+          model: Board,
+        },
+      ],
+    });
+    notifications.forEach((notif) => {
+      console.log(notif.dataValues);
+    });
     return notifications;
   }
-
-  async createNotification(title: string, message: string, userId: number, boardId: number, fromUserId: number) {
-
+  async getAllUserNotifications(userId: number) {
+    console.log(userId);
+    const notifications = await this.notificationRepository.findAll({
+      where: { userId: userId },
+      include: [
+        {
+          model: Task,
+        },
+        {
+          model: User,
+        },
+        {
+          model: Board,
+        },
+      ],
+    });
+    notifications.forEach((notif) => {
+      console.log(notif.dataValues);
+    });
+    return notifications;
   }
+  async createNotification(title: string, message: string, userId: number, boardId: number, taskId: number) {}
 
-  async deleteNotification(userId: number, notificationId: number) {
-    
-  }
+  async deleteNotification(userId: number, notificationId: number) {}
 
-
-  async getAllInviteNotifications(userId: number) {
-    const notifications = await this.notificationRepository.findAll({ where: { userId } });
-    console.log(notifications);
-
-    const notifWithInviter: any[] = await Promise.all(
-      notifications.map(async (notif) => {
-        const inviterId = notif.fromUserId;
-        const inviter = await User.findOne({ where: { id: inviterId } });
-        return {
-          id: notif.id,
-          title: notif.title,
-          message: notif.message,
-          userId: notif.userId,
-          boardId: notif.boardId,
-          inviterUserId: notif.fromUserId,
-          inviterFirstName: inviter.firstName,
-          inviterLastName: inviter.lastName,
-          inviterMiddleName: inviter.middleName,
-        };
-      })
-    );
-    console.log(notifWithInviter);
-    return notifWithInviter;
-  }
-
-  async createInviteNotification(title: string, message: string, userId: number, boardId: number, fromUserId: number) {
-    try {
-      const user = await User.findByPk(userId);
-      if (!user) {
-        throw new NotFoundException("User not found");
-      }
-
-      const board = await Board.findByPk(boardId);
-      if (!board) {
-        throw new NotFoundException("Board not found");
-      }
-
-      const notif = new Notification();
-      notif.title = title;
-      notif.message = message;
-      notif.userId = userId;
-      notif.boardId = boardId;
-      notif.fromUserId = fromUserId;
-      await notif.save();
-
-      this.socketService.sendNotif(userId, title, message, null);
-    } catch (error) {
-      console.error("Error creating notification:", error);
-      throw new Error("Failed to create notification");
-    }
-  }
-
-  async deleteInviteNotification(userId: number, notificationId: number) {
-    const notification = await this.notificationRepository.findOne({ where: { id: notificationId, userId } });
-    if (!notification) {
-      throw new NotFoundException(`Notification with id ${notificationId} not found for user with id ${userId}`);
-    }
-    await notification.destroy();
-    return { message: `Notification with id ${notificationId} deleted successfully` };
+  async markNotificationsAsRead(notificationIds: number[]) {
+    notificationIds.forEach(async (notifId) => {
+      const notification = await this.notificationRepository.findOne({ where: { id: notifId } });
+      notification.isRead = true;
+      notification.save();
+    });
   }
 }

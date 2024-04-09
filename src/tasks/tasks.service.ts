@@ -11,6 +11,8 @@ import { IncludeThroughOptions } from "sequelize";
 import { Priority } from "src/priorities/priorities.model";
 import { SocketService } from "src/socket.service";
 import { Comments } from "./comments.model";
+import { Notification } from "src/notification/notifications.model";
+import { SubTask } from "src/subtasks/subtasks.model";
 
 @Injectable()
 export class TasksService {
@@ -177,6 +179,15 @@ export class TasksService {
       userTasks.userId = uid;
       userTasks.taskId = task.id;
       await userTasks.save();
+
+      const notif = new Notification();
+      notif.title = "Назначение на задачу";
+      notif.message = `Вы назначены на задачу "${task.title}"`;
+      notif.userId = uid;
+      notif.taskId = task.id;
+      notif.boardId = boardId;
+      notif.save();
+      this.socketService.sendNotif(uid, notif.title, notif.message, boardId, task, notif.id);
     }
     await task.$get("users");
     // this.socketService.sendNewTaskUpdate(task);
@@ -275,7 +286,13 @@ export class TasksService {
       throw new NotFoundException("State not found");
     }
 
-    const task = await this.taskRepository.findByPk(taskId);
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId },
+      include: {
+        model: SubTask,
+      },
+    });
+    console.log(task);
     if (!task) {
       throw new NotFoundException("Task not found");
     }
@@ -283,10 +300,24 @@ export class TasksService {
     task.isCompleted = updateTaskDto.isCompleted;
 
     await task.save();
-    const title = `Задача завершена`;
-    const message = `Задача ${task.title} завершена`;
+    if (task.isCompleted) {
+      task.subTasks.forEach((subtask) => {
+        subtask.isCompleted = true;
+        subtask.save();
+      });
+      console.log(task);
+      const notif = new Notification();
+      notif.title = "Задача завершена";
+      notif.message = `Задача ${task.title} завершена`;
+      notif.userId = userId;
+      notif.taskId = taskId;
+      notif.boardId = boardId;
+      notif.save();
+      const title = `Задача завершена`;
+      const message = `Задача ${task.title} завершена`;
 
-    this.socketService.sendNotif(null, title, message, boardId);
+      this.socketService.sendNotif(notif.userId, notif.title, notif.message, notif.boardId, task, notif.id);
+    }
 
     return task;
   }

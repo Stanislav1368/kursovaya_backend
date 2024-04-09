@@ -6,11 +6,14 @@ export class NotificationsController {
   constructor(private notificationsService: NotificationsService) {}
 
   @Get()
-  async getAllNotifications(@Query("boardId") boardId: number) {
-    console.log({ boardId });
+  async getAllBoardNotifications(@Query("boardId") boardId: number) {
+    console.log(boardId);
     return this.notificationsService.getAllNotifications(boardId);
   }
-
+  @Get("forUser")
+  async getAllUserNotifications(@Param("userId") userId: number) {
+    return this.notificationsService.getAllUserNotifications(userId);
+  }
   @Post()
   async createNotification(@Body() body: any) {
     try {
@@ -23,25 +26,14 @@ export class NotificationsController {
     }
   }
 
-  @Get("inviteNotif")
-  async getAllInviteNotifications(@Param("userId") userId: number) {
-    return this.notificationsService.getAllInviteNotifications(userId);
+  @Delete(":notificationId")
+  async deleteNotification(@Param("userId") userId: number, @Param("notificationId") notificationId: number) {
+    return this.notificationsService.deleteNotification(userId, notificationId);
   }
 
-  @Post("inviteNotif")
-  async createInviteNotification(@Body() body: any) {
-    try {
-      const { title, message, userId, boardId, fromUserId } = body;
-      console.log(userId);
-      await this.notificationsService.createInviteNotification(title, message, userId, boardId, fromUserId);
-      return "Notification created successfully";
-    } catch (error) {
-      throw new NotFoundException();
-    }
-  }
-
-  @Delete("inviteNotif/:notificationId")
-  async deleteInviteNotification(@Param("userId") userId: number, @Param("notificationId") notificationId: number) {
-    return this.notificationsService.deleteInviteNotification(userId, notificationId);
+  @Post("readNotif") 
+  async markNotificationsAsRead(@Body() body: any) { 
+    console.log(body.notificationIds)
+    await this.notificationsService.markNotificationsAsRead(body.notificationIds); 
   }
 }

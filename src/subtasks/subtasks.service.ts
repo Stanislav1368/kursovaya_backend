@@ -40,6 +40,7 @@ export class SubTasksService {
     const subtasks = await this.subTaskRepository.findAll({
       where: { taskId: taskId },
     });
+    console.log(subtasks)
     return subtasks;
   }
 
@@ -107,22 +108,21 @@ export class SubTasksService {
     const allSubTasks = await this.subTaskRepository.findAll({ where: { taskId } });
     const allCompleted = allSubTasks.every((sub) => sub.isCompleted === true);
 
-    // Проверяем, все ли подзадачи выполнены
     if (allCompleted) {
       if (task) {
         task.isCompleted = true; // Если все выполнены, ставим статус задачи как выполненной
+       
         const notif = new Notification();
         notif.title = "Задача завершена";
         notif.message = `Задача ${task.title} завершена`;
-        notif.userId = null;
+        notif.userId = userId;
+        notif.taskId = taskId;
         notif.boardId = boardId;
-        notif.fromUserId = null;
         notif.save();
-
         const title = `Задача завершена`;
         const message = `Задача ${task.title} завершена`;
 
-        this.socketService.sendNotif(null, title, message, boardId);
+        this.socketService.sendNotif(userId, title, message, boardId, task, notif.id);
 
         await task.save();
       }

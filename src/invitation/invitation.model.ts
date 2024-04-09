@@ -2,15 +2,14 @@ import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "
 import { Board } from "src/boards/boards.model";
 import { UserBoards } from "src/boards/user-boards.model";
 import { State } from "src/states/states.model";
-import { Task } from "src/tasks/tasks.model";
 import { User } from "src/users/user.model";
 
-interface NotifCreationAttr {
+interface InviteCreationAttr {
   title: string;
   message: string;
 }
-@Table({ tableName: "notifications" })
-export class Notification extends Model<Notification, NotifCreationAttr> {
+@Table({ tableName: "invitations" })
+export class Invitation extends Model<Invitation, InviteCreationAttr> {
   @Column({ type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true })
   id: number;
 
@@ -27,20 +26,9 @@ export class Notification extends Model<Notification, NotifCreationAttr> {
   @Column({ type: DataType.INTEGER, allowNull: true })
   userId: number;
 
-  @BelongsTo(() => Task)
-  task: Task;
-
-  @ForeignKey(() => Task)
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  taskId: number;
-
-  @BelongsTo(() => Board)
-  board: Board;
-
-  @ForeignKey(() => Board)
   @Column({ type: DataType.INTEGER, allowNull: true })
   boardId: number;
 
-  @Column({ type: DataType.BOOLEAN, allowNull: true, defaultValue: false })
-  isRead: boolean;
+  @Column({ type: DataType.INTEGER, allowNull: true })
+  fromUserId: number;
 }
