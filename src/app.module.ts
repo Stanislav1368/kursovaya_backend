@@ -24,7 +24,8 @@ import { SubTask } from "./subtasks/subtasks.model";
 import { SubTasksModule } from "./subtasks/subtasks.module";
 import { InvitationModule } from './invitation/invitation.module';
 import { Invitation } from "./invitation/invitation.model";
-
+import { FileModule } from './file/file.module';
+import { File } from './file/file.model';
 @Module({
   controllers: [],
   providers: [SocketService],
@@ -39,7 +40,7 @@ import { Invitation } from "./invitation/invitation.model";
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Board, UserBoards, UserTasks, State, Task, SubTask, Role, Priority, Comments, Notification, Invitation],
+      models: [User, Board, UserBoards, UserTasks, File, State, Task, SubTask, Role, Priority, Comments, Notification, Invitation],
       autoLoadModels: true,
       synchronize: true,
     }),
@@ -48,8 +49,8 @@ import { Invitation } from "./invitation/invitation.model";
     BoardsModule,
     StatesModule,
     TasksModule,
-    RolesModule,
-    PrioritiesModule, NotificationsModule, SubTasksModule, InvitationModule
+    RolesModule, FileModule,
+    PrioritiesModule, NotificationsModule, SubTasksModule, InvitationModule, FileModule
   ],
 })
 export class AppModule {}

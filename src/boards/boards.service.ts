@@ -10,6 +10,7 @@ import { StatesService } from "src/states/states.service";
 import { Task } from "src/tasks/tasks.model";
 import { IncludeThroughOptions } from "sequelize";
 import { SocketService } from "src/socket.service";
+import { Notification } from "src/notification/notifications.model";
 
 @Injectable()
 export class BoardsService {
@@ -22,17 +23,12 @@ export class BoardsService {
   ) {}
 
   async updateBoardWithColumns(boardId: number, newColumns: any[]) {
-    console.log(newColumns);
-
     const board = await this.boardRepository.findByPk(boardId, { include: [{ all: true }] });
 
     // Проверяем, что доска существует
     if (!board) {
       throw new Error("Board not found");
     }
-    console.log(board);
-    // Обновляем состояния (столбцы) доски с новыми данными
-    console.log(newColumns);
 
     const newColumnsArray = Object.values(newColumns);
     console.log(newColumnsArray[0][1].tasks);
@@ -42,12 +38,12 @@ export class BoardsService {
   }
 
   async getAllBoards(userId: number): Promise<Board[]> {
+    console.log(userId);
     const user = await User.findByPk(userId, { include: Board });
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
-    console.log(user.boards);
     return user.boards;
   }
   async updateBoard(userId: number, boardId: number, updateBoardDto: UpdateBoardDto) {
@@ -140,10 +136,21 @@ export class BoardsService {
     if (!user) {
       throw new Error("User not found");
     }
+    const board = await this.boardRepository.findOne({
+      where: { id: boardId },
+      include: [
+        {
+          model: Notification,
+        },
+      ],
+    });
 
-    const board = await Board.findByPk(boardId);
     if (!board) {
       throw new Error("Board not found");
+    }
+    const notifications = board.notifications;
+    for (const notification of notifications) {
+      await notification.destroy(); // Удаляем каждое уведомление связанное с доской
     }
     const states: State[] = await this.statesService.getStatesByBoardId(boardId);
 
@@ -158,6 +165,5 @@ export class BoardsService {
 
   async inviteUser(userId: number, boardId: number) {
     console.log(userId, boardId);
-   
   }
 }

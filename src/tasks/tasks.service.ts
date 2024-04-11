@@ -190,9 +190,6 @@ export class TasksService {
       this.socketService.sendNotif(uid, notif.title, notif.message, boardId, task, notif.id);
     }
     await task.$get("users");
-    // this.socketService.sendNewTaskUpdate(task);
-    // console.log(task);
-    // return task;
 
     const taskWithUsers = await this.taskRepository.findByPk(task.id, { include: [{ model: User }, { model: Priority }] });
     this.socketService.sendNewTaskUpdate(taskWithUsers); // Отправляем обновленную задачу с пользователями
@@ -348,7 +345,53 @@ export class TasksService {
     await task.save();
     return task;
   }
-  async updateTask(userId: number, taskId: number, updateTaskDto: any) {
+
+  async updateTaskUsers(userId: number, boardId: number, taskId: number, isResponsible: boolean) {
+    console.log(userId, boardId, taskId, isResponsible);
+    const user = await this.userRepository.findByPk(userId);
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    const task = await this.taskRepository.findByPk(taskId);
+    if (!task) {
+      throw new NotFoundException("Task not found");
+    }
+    console.log(task);
+    if (isResponsible) {
+      // Если пользователь должен быть ответственным, добавляем его к задаче
+      const userTask = new UserTasks();
+      userTask.userId = userId;
+      userTask.taskId = taskId;
+      await userTask.save();
+
+      const notif = new Notification();
+      notif.title = "Назначение ответственного на задачу";
+      notif.message = `Вы назначены ответственным на задачу "${task.title}"`;
+      notif.userId = userId;
+      notif.taskId = taskId;
+      notif.boardId = boardId;
+      await notif.save();
+
+      this.socketService.sendNotif(userId, notif.title, notif.message, notif.boardId, task, notif.id);
+    } else {
+      // Если пользователь больше не ответственный, удаляем его из задачи
+      await UserTasks.destroy({
+        where: {
+          userId,
+          taskId,
+        },
+      });
+    }
+
+    const updatedTask = await this.taskRepository.findByPk(taskId, { include: [{ model: User }, { model: Priority }] });
+    // this.socketService.sendUpdatedTaskUpdate(updatedTask); // Отправляем обновленную задачу с пользователями
+
+    console.log(updatedTask); // Выводим объект задачи с пользователями
+  }
+
+  async updateTask(boardId: number, userId: number, taskId: number, updateTaskDto: any) {
+    console.log(updateTaskDto);
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
       throw new NotFoundException("User not found");
@@ -362,11 +405,13 @@ export class TasksService {
     task.title = updateTaskDto.title || task.title;
     task.description = updateTaskDto.description || task.description;
     task.priorityId = updateTaskDto.priorityId || task.priorityId;
-    task.startDate = updateTaskDto.dates[0] || task.startDate;
-    task.endDate = updateTaskDto.dates[1] || task.endDate;
+    if (updateTaskDto.dates && updateTaskDto.dates.length >= 2) {
+      task.startDate = updateTaskDto.dates[0] || task.startDate;
+      task.endDate = updateTaskDto.dates[1] || task.endDate;
+    }
 
     await task.save();
-    console.log(task.title);
+
     // const userIds = updateTaskDto.userIds; // Получаем массив идентификаторов пользователей
 
     // // Получаем существующие связи пользователя с задачей

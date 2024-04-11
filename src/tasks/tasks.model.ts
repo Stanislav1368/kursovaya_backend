@@ -7,6 +7,7 @@ import { Priority } from "src/priorities/priorities.model";
 import { Comments } from "./comments.model";
 import { SubTask } from "src/subtasks/subtasks.model";
 import { Notification } from "src/notification/notifications.model";
+import { File } from "src/file/file.model";
 
 interface TaskCreationAttr {
   title: string;
@@ -59,6 +60,11 @@ export class Task extends Model<Task, TaskCreationAttr> {
   @HasMany(() => SubTask)
   subTasks: SubTask[];
 
+  @HasMany(() => File)
+  files: File[];
+
   @HasMany(() => Notification)
   notifications: Notification[];
+
+
 }

@@ -28,13 +28,10 @@ export class NotificationsService {
         },
       ],
     });
-    notifications.forEach((notif) => {
-      console.log(notif.dataValues);
-    });
+
     return notifications;
   }
   async getAllUserNotifications(userId: number) {
-    console.log(userId);
     const notifications = await this.notificationRepository.findAll({
       where: { userId: userId },
       include: [

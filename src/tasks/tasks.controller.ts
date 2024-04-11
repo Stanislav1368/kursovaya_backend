@@ -16,7 +16,7 @@ export class TasksController {
   ) {
     return this.tasksService.getCheckedTasks(userId, boardId);
   }
-  
+
   @Get("states/:stateId/tasks")
   async getTasksInfo(@Param("userId") userId: number, @Param("boardId") boardId: number, @Param("stateId") stateId: number) {
     return this.tasksService.getTasksInfo(userId, boardId, stateId);
@@ -61,7 +61,16 @@ export class TasksController {
     @Param("taskId") taskId: number,
     @Body() updateTaskDto: CreateTaskDto
   ) {
-    return this.tasksService.updateTask(userId, taskId, updateTaskDto);
+    return this.tasksService.updateTask(boardId, userId, taskId, updateTaskDto);
+  }
+  @Put("states/:stateId/tasks/:taskId/users")
+  async updateTaskUsers(
+    @Param("userId") userId: number,
+    @Param("boardId") boardId: number,
+    @Param("taskId") taskId: number,
+    @Body() dto: any
+  ) {
+    return this.tasksService.updateTaskUsers(userId, boardId, taskId, dto.isResponsible);
   }
   @Put("states/:stateId/tasks/:taskId/archive")
   async taskToArchive(
