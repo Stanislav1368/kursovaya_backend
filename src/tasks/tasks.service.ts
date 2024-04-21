@@ -171,6 +171,7 @@ export class TasksService {
     task.startDate = createTaskDto.dates[0];
     task.endDate = createTaskDto.dates[1];
     task.hours = createTaskDto.hours;
+    task.creater = userId;
     const maxOrder = await this.findMaxOrderInState(stateId);
     task.order = maxOrder + 1;
     await task.save();

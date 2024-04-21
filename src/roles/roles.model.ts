@@ -15,6 +15,9 @@ export class Role extends Model<Role, RoleCreationAttr> {
   @Column({ type: DataType.STRING, allowNull: false })
   name: string;
 
+  @Column({ type: DataType.STRING, allowNull: true })
+  description: string;
+
   @HasMany(() => UserBoards)
   userBoards: UserBoards[];
 }
