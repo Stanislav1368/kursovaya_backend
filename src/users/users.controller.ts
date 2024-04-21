@@ -62,6 +62,7 @@ export class UsersController {
   updateRole(@Param("userId") userId: number, @Param("boardId") boardId: number, @Body() updateRoleDto: UpdateRoleDto) {
     return this.usersService.updateRole(userId, boardId, updateRoleDto);
   }
+  
   @UseGuards(JwtAuthGuard)
   @Get("currentUser")
   getCurrentUser(@Request() req: any) {

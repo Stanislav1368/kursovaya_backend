@@ -32,8 +32,6 @@ export class Board extends Model<Board, BoardCreationAttr> {
   @HasMany(() => State)
   states: State[];
 
-  @HasMany(() => Role)
-  roles: Role[];
 
   @HasMany(() => Priority)
   priorities: Priority[];

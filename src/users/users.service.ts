@@ -51,7 +51,7 @@ export class UsersService {
           where: { userId: user.id, boardId: boardId },
         });
         const role = await this.roleRepository.findOne({
-          where: { id: userBoard.roleId, boardId: boardId },
+          where: { id: userBoard.roleId },
         });
 
         const userInfo = {
@@ -63,13 +63,7 @@ export class UsersService {
           isOwner: userBoard.isOwner,
           roleId: userBoard.roleId,
           roleName: role?.name,
-          canCreateRole: role?.canCreateRole,
-          canEditRole: role?.canEditRole,
-          canAccessArchive: role?.canAccessArchive,
-          canCreatePriorities: role?.canCreatePriorities,
-          canAddColumns: role?.canAddColumns,
-          canAddTasks: role?.canAddTasks,
-          canInviteUsers: role?.canInviteUsers,
+          
         };
 
         return userInfo;
@@ -99,14 +93,7 @@ export class UsersService {
     return role;
   }
 
-  async updateRoleOnBoard(userId: number, boardId: number, updatePrivilegeDto: UpdatePrivilegeDto) {
-    const userBoard = await this.userBoardsRepository.findOne({
-      where: { userId: userId, boardId: boardId },
-    });
-    userBoard.isOwner = updatePrivilegeDto.newPrivilege ? true : false;
-    await userBoard.save();
-    return userBoard.isOwner;
-  }
+
   async updateRole(userId: number, boardId: number, updateRoleDto: UpdateRoleDto) {
     const userBoard = await this.userBoardsRepository.findOne({
       where: { userId: userId, boardId: boardId },
