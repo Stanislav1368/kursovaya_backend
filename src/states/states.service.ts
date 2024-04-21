@@ -72,9 +72,6 @@ export class StatesService {
       });
     });
 
-    // Сохраняешь обновленные задачи в базе данных
-
-    // //НУЖНО ПРОСТО ПЕРЕБРАТЬ ЗАДАЧИ И ЗАМЕНИТЬ У НИх ПОЛЯ!!!
     return "Board updated successfully";
   }
 
@@ -86,30 +83,34 @@ export class StatesService {
       throw new NotFoundException("Board not found");
     }
     try {
-      const states: State[] = await this.stateRepository.findAll({
-        where: { boardId },
-        include: [
-          {
-            model: Task,
-            as: "tasks",
-            include: [
-              {
-                model: User,
-                through: { attributes: [] },
-                attributes: ["id", "email", "firstName", "lastName", "middleName"],
-              },
-              {
-                model: Priority,
-                attributes: ["name", "color"],
-              },
-              {
-                model: SubTask,
-                as: "subTasks",
-                attributes: ["id", "title", "isCompleted"],
-              },
-            ],
-          },
-        ],
+      const states: State[] = await this.stateRepository.findAll({ 
+        where: { boardId }, 
+        include: [ 
+          { 
+            model: Task, 
+            as: "tasks", 
+            include: [ 
+              { 
+                model: User, 
+                through: { attributes: [] }, 
+                attributes: ["id", "email", "firstName", "lastName", "middleName"], 
+              }, 
+              { 
+                model: Priority, 
+                attributes: ["name", "color"], 
+              }, 
+              { 
+                model: SubTask, 
+                as: "subTasks", 
+                attributes: ["id", "title", "isCompleted"], 
+              }, 
+              { 
+                model: Task, 
+                as: "dependentTask" // Включаем зависимую задачу
+              }, 
+            ], 
+          }, 
+        ], 
       });
       console.log(states);
       return states;

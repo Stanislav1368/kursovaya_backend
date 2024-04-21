@@ -147,6 +147,7 @@ export class TasksService {
     return await this.taskRepository.findByPk(taskId, { include: [{ model: User }] });
   }
   async createTask(userId: number, boardId: number, stateId: number, createTaskDto: CreateTaskDto) {
+    console.log(createTaskDto);
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
       throw new NotFoundException("User not found");
@@ -166,29 +167,35 @@ export class TasksService {
     task.description = createTaskDto.description;
     task.stateId = state.id;
     task.priorityId = createTaskDto.priorityId;
+    task.dependentTaskId = createTaskDto.dependentTaskId;
     task.startDate = createTaskDto.dates[0];
     task.endDate = createTaskDto.dates[1];
+    task.hours = createTaskDto.hours;
     const maxOrder = await this.findMaxOrderInState(stateId);
     task.order = maxOrder + 1;
     await task.save();
 
     const userIds = createTaskDto.userIds;
 
-    for (const uid of userIds) {
-      const userTasks = new UserTasks();
-      userTasks.userId = uid;
-      userTasks.taskId = task.id;
-      await userTasks.save();
+    if (userIds && userIds.length > 0) {
+      for (const uid of userIds) {
+        const userTasks = new UserTasks();
+        userTasks.userId = uid;
+        userTasks.taskId = task.id;
+        await userTasks.save();
 
-      const notif = new Notification();
-      notif.title = "Назначение на задачу";
-      notif.message = `Вы назначены на задачу "${task.title}"`;
-      notif.userId = uid;
-      notif.taskId = task.id;
-      notif.boardId = boardId;
-      notif.save();
-      this.socketService.sendNotif(uid, notif.title, notif.message, boardId, task, notif.id);
+        const notif = new Notification();
+        notif.title = "Назначение на задачу";
+        notif.message = `Вы назначены на задачу "${task.title}"`;
+        notif.userId = uid;
+        notif.taskId = task.id;
+        notif.boardId = boardId;
+        await notif.save();
+
+        this.socketService.sendNotif(uid, notif.title, notif.message, boardId, task, notif.id);
+      }
     }
+
     await task.$get("users");
 
     const taskWithUsers = await this.taskRepository.findByPk(task.id, { include: [{ model: User }, { model: Priority }] });
@@ -295,7 +302,7 @@ export class TasksService {
     }
 
     task.isCompleted = updateTaskDto.isCompleted;
-
+    task.actualEndDate = updateTaskDto.isCompleted ? new Date() : null;
     await task.save();
     if (task.isCompleted) {
       task.subTasks.forEach((subtask) => {
@@ -314,6 +321,11 @@ export class TasksService {
       const message = `Задача ${task.title} завершена`;
 
       this.socketService.sendNotif(notif.userId, notif.title, notif.message, notif.boardId, task, notif.id);
+    } else {
+      task.subTasks.forEach((subtask) => {
+        subtask.isCompleted = false;
+        subtask.save();
+      });
     }
 
     return task;
@@ -364,13 +376,14 @@ export class TasksService {
       userTask.userId = userId;
       userTask.taskId = taskId;
       await userTask.save();
-
+      console.log();
       const notif = new Notification();
-      notif.title = "Назначение ответственного на задачу";
+      notif.title = "Назначение на задачу";
       notif.message = `Вы назначены ответственным на задачу "${task.title}"`;
       notif.userId = userId;
       notif.taskId = taskId;
       notif.boardId = boardId;
+      console.log(notif);
       await notif.save();
 
       this.socketService.sendNotif(userId, notif.title, notif.message, notif.boardId, task, notif.id);
@@ -456,11 +469,22 @@ export class TasksService {
       throw new NotFoundException(`State not found`);
     }
 
-    const task = await this.taskRepository.findByPk(taskId);
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId },
+      include: [
+        {
+          model: Notification,
+        },
+      ],
+    });
     if (!task) {
       throw new NotFoundException(`Task not found`);
     }
-
+    console.log(task);
+    task.notifications.forEach((notif) => {
+      console.log(notif);
+      notif.destroy();
+    });
     await task.destroy();
     return { message: "Task deleted successfully" };
   }

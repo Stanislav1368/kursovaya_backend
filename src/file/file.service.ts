@@ -7,6 +7,7 @@ import path from "path";
 import { MulterModuleOptions } from "@nestjs/platform-express";
 import { Express } from "express";
 import { diskStorage } from "multer";
+import { unlink } from "fs/promises";
 @Injectable()
 export class FileService {
   constructor(
@@ -14,9 +15,9 @@ export class FileService {
     private fileRepository: typeof File
   ) {}
 
-  async createFile(data: { name: string; taskId: number; path: string, type: string}) {
+  async createFile(data: { name: string; taskId: number; path: string; type: string }) {
     const file = new File();
-    console.log(data.path)
+    console.log(data.path);
     file.name = data.name;
     file.taskId = data.taskId;
     file.path = data.path;
@@ -34,12 +35,11 @@ export class FileService {
     return this.fileRepository.findOne({ where: { id: fileId } });
   }
 
-
-
-  async removeFile(id: number): Promise<number> {
-    const deletedFileCount = await this.fileRepository.destroy({
+  async removeFile(id: number, file: any) {
+    
+    await this.fileRepository.destroy({
       where: { id },
     });
-    return deletedFileCount;
+    await unlink(file.path);
   }
 }

@@ -43,6 +43,19 @@ export class Task extends Model<Task, TaskCreationAttr> {
   @Column({ type: DataType.DATE, allowNull: true })
   endDate: Date;
 
+  @Column({ type: DataType.DATE, allowNull: true })
+  actualEndDate: Date;
+
+  @Column({ type: DataType.INTEGER, allowNull: true })
+  hours: number;
+
+  @ForeignKey(() => Task)
+  @Column({ type: DataType.INTEGER, allowNull: true })
+  dependentTaskId: number;
+
+  @BelongsTo(() => Task, { as: "dependentTask", foreignKey: "dependentTaskId" })
+  parentTask: Task;
+
   @ForeignKey(() => State)
   @Column({ type: DataType.INTEGER, allowNull: true })
   stateId: number;
@@ -65,6 +78,4 @@ export class Task extends Model<Task, TaskCreationAttr> {
 
   @HasMany(() => Notification)
   notifications: Notification[];
-
-
 }

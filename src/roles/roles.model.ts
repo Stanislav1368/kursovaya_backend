@@ -5,22 +5,6 @@ import { State } from "src/states/states.model";
 
 interface RoleCreationAttr {
   name: string;
-
-  canEditBoardInfo: boolean;
-
-  canAddColumns: boolean;
-
-  canAddUsers: boolean;
-
-  canAddPriorities: boolean;
-
-  canCreateRoles: boolean;
-
-  canAccessStatistics: boolean;
-
-  canCreateReports: boolean;
-
-  canAccessArchive: boolean;
 }
 
 @Table({ tableName: "roles" })

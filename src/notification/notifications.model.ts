@@ -27,7 +27,7 @@ export class Notification extends Model<Notification, NotifCreationAttr> {
   @Column({ type: DataType.INTEGER, allowNull: true })
   userId: number;
 
-  @BelongsTo(() => Task)
+  @BelongsTo(() => Task, { onDelete: "CASCADE" })
   task: Task;
 
   @ForeignKey(() => Task)

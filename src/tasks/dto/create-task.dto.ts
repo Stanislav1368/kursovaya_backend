@@ -4,5 +4,6 @@ export class CreateTaskDto {
     readonly userIds: number[];   
     readonly priorityId: number;
     readonly dates: Date[];
-
+    readonly dependentTaskId: number;
+    readonly hours: number;
 }

@@ -67,8 +67,9 @@ export class FileController {
 
     return file.path;
   }
-  @Delete(":id")
-  async remove(@Param("id") id: number): Promise<number> {
-    return this.fileService.removeFile(id);
+  @Delete("delete/:fileId")
+  async remove(@Param("fileId") fileId: number, @Body() file: any) {
+    console.log(file, fileId);
+    this.fileService.removeFile(fileId, file);
   }
 }

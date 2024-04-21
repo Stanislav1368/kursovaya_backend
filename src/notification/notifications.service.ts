@@ -53,7 +53,14 @@ export class NotificationsService {
   }
   async createNotification(title: string, message: string, userId: number, boardId: number, taskId: number) {}
 
-  async deleteNotification(userId: number, notificationId: number) {}
+  async deleteNotification(userId: number, notificationId: number) {
+    await this.notificationRepository.destroy({
+      where: {
+        userId: userId,
+        id: notificationId,
+      },
+    });
+  }
 
   async markNotificationsAsRead(notificationIds: number[]) {
     notificationIds.forEach(async (notifId) => {
