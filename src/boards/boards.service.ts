@@ -57,7 +57,7 @@ export class BoardsService {
     if (!board) {
       throw new NotFoundException("Board not found");
     }
-
+    board.isArchived = updateBoardDto.isArchived !== undefined ? updateBoardDto.isArchived : board.isArchived;
     board.favorite = updateBoardDto.favorite !== undefined ? updateBoardDto.favorite : board.favorite;
     if (updateBoardDto.title) {
       board.title = updateBoardDto.title;
@@ -103,7 +103,7 @@ export class BoardsService {
     if (!board) {
       throw new NotFoundException("Board not found");
     }
-    const roleId = (await Role.findOne({where: {name: "Читатель"}})).id;
+    const roleId = (await Role.findOne({ where: { name: "Читатель" } })).id;
     const userboards = await UserBoards.create({ userId, boardId: board.id, isOwner: false, roleId: roleId });
     return userboards;
   }

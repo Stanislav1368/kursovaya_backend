@@ -14,10 +14,10 @@ export class UsersController {
     private boardsService: BoardsService
   ) {}
 
-  @Post(":userId/boards")
-  async createBoard(@Param("userId") userId: number, @Body() createBoardDto: CreateBoardDto) {
-    return this.boardsService.createBoardForUser(userId, createBoardDto);
-  }
+  // @Post(":userId/boards")
+  // async createBoard(@Param("userId") userId: number, @Body() createBoardDto: CreateBoardDto) {
+  //   return this.boardsService.createBoardForUser(userId, createBoardDto);
+  // }
 
   @Post()
   createUser(@Body() userDto: CreateUserDto) {
@@ -69,8 +69,10 @@ export class UsersController {
     return this.usersService.getUserById(req.user.id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(":userId")
-  getUser(@Param("id") userId: number) {
+  getUser(@Param("userId") userId: number) {
+
     return this.usersService.getUserById(userId);
   }
 

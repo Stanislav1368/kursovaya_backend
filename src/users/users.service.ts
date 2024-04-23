@@ -119,6 +119,7 @@ export class UsersService {
     const user = await this.userRepository.findByPk(userId, {
       include: { all: true },
     });
+    console.log(userId)
     if (!user) {
       throw new NotFoundException("User not found");
     }

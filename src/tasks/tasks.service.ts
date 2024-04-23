@@ -162,15 +162,15 @@ export class TasksService {
     }
 
     const task = new Task();
-
-    task.title = createTaskDto.title;
-    task.description = createTaskDto.description;
-    task.stateId = state.id;
-    task.priorityId = createTaskDto.priorityId;
-    task.dependentTaskId = createTaskDto.dependentTaskId;
-    task.startDate = createTaskDto.dates[0];
-    task.endDate = createTaskDto.dates[1];
-    task.hours = createTaskDto.hours;
+    console.log(createTaskDto)
+    task.title = createTaskDto.title || null;
+    task.description = createTaskDto.description || null;
+    task.stateId = state.id || null;
+    task.priorityId = createTaskDto.priorityId || null;
+    task.dependentTaskId = createTaskDto.dependentTaskId || null;
+    task.startDate = createTaskDto.dates ? createTaskDto.dates[0] : null;
+    task.endDate = createTaskDto.dates ? createTaskDto.dates[1] : null;
+    task.hours = createTaskDto.hours || null;
     task.creater = userId;
     const maxOrder = await this.findMaxOrderInState(stateId);
     task.order = maxOrder + 1;
