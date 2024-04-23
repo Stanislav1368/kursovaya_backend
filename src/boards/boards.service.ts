@@ -11,6 +11,7 @@ import { Task } from "src/tasks/tasks.model";
 import { IncludeThroughOptions } from "sequelize";
 import { SocketService } from "src/socket.service";
 import { Notification } from "src/notification/notifications.model";
+import { Role } from "src/roles/roles.model";
 
 @Injectable()
 export class BoardsService {
@@ -56,7 +57,7 @@ export class BoardsService {
     if (!board) {
       throw new NotFoundException("Board not found");
     }
-
+    board.isArchived = updateBoardDto.isArchived !== undefined ? updateBoardDto.isArchived : board.isArchived;
     board.favorite = updateBoardDto.favorite !== undefined ? updateBoardDto.favorite : board.favorite;
     if (updateBoardDto.title) {
       board.title = updateBoardDto.title;
@@ -102,8 +103,8 @@ export class BoardsService {
     if (!board) {
       throw new NotFoundException("Board not found");
     }
-
-    const userboards = await UserBoards.create({ userId, boardId: board.id, isOwner: false });
+    const roleId = (await Role.findOne({ where: { name: "Читатель" } })).id;
+    const userboards = await UserBoards.create({ userId, boardId: board.id, isOwner: false, roleId: roleId });
     return userboards;
   }
 

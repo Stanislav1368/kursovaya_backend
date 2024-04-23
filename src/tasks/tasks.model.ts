@@ -78,4 +78,7 @@ export class Task extends Model<Task, TaskCreationAttr> {
 
   @HasMany(() => Notification)
   notifications: Notification[];
+
+  @Column({ type: DataType.INTEGER, allowNull: true })
+  creater: number;
 }

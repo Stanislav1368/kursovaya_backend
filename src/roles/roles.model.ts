@@ -15,33 +15,8 @@ export class Role extends Model<Role, RoleCreationAttr> {
   @Column({ type: DataType.STRING, allowNull: false })
   name: string;
 
-  @Column({ type: DataType.BOOLEAN, allowNull: false })
-  canCreateRole: boolean;
-
-  @Column({ type: DataType.BOOLEAN, allowNull: false })
-  canEditRole: boolean;
-
-  @Column({ type: DataType.BOOLEAN, allowNull: false })
-  canAccessArchive: boolean;
-
-  @Column({ type: DataType.BOOLEAN, allowNull: false })
-  canCreatePriorities: boolean;
-
-  @Column({ type: DataType.BOOLEAN, allowNull: false })
-  canAddColumns: boolean;
-
-  @Column({ type: DataType.BOOLEAN, allowNull: false })
-  canAddTasks: boolean;
-
-  @Column({ type: DataType.BOOLEAN, allowNull: false })
-  canInviteUsers: boolean;
-
-  @BelongsTo(() => Board)
-  board: Board;
-
-  @ForeignKey(() => Board)
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  boardId: number;
+  @Column({ type: DataType.STRING, allowNull: true })
+  description: string;
 
   @HasMany(() => UserBoards)
   userBoards: UserBoards[];

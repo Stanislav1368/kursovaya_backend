@@ -32,8 +32,8 @@ export class Board extends Model<Board, BoardCreationAttr> {
   @HasMany(() => State)
   states: State[];
 
-  @HasMany(() => Role)
-  roles: Role[];
+  @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false })
+  isArchived: boolean;
 
   @HasMany(() => Priority)
   priorities: Priority[];
