@@ -52,4 +52,29 @@ export class PrioritiesService {
 
     return priority;
   }
+  
+  async deletePriority(boardId: number, priorityId: number) {
+    const board = await this.boardRepository.findByPk(boardId);
+    if (!board) {
+      throw new NotFoundException("board not found");
+    }
+    const priority = await this.roleRepository.findByPk(priorityId);
+    if (!priority) {
+      throw new NotFoundException("priority not found");
+    }
+    priority.destroy();
+  }
+  async updatePriority(boardId: number, priorityId: number, createPriorityDto: CreatePriorityDto) {
+    const board = await this.boardRepository.findByPk(boardId);
+    if (!board) {
+      throw new NotFoundException("board not found");
+    }
+    const priority = await this.roleRepository.findByPk(priorityId);
+    if (!priority) {
+      throw new NotFoundException("priority not found");
+    }
+    priority.name = createPriorityDto.name;
+    priority.color = createPriorityDto.color;
+    priority.save()
+  }
 }

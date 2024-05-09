@@ -112,7 +112,7 @@ export class StatesService {
           }, 
         ], 
       });
-      console.log(states);
+
       return states;
     } catch (error) {
       console.log(error);

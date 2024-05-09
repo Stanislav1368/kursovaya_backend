@@ -162,9 +162,9 @@ export class TasksService {
     }
 
     const task = new Task();
-    console.log(createTaskDto)
-    task.title = createTaskDto.title || null;
-    task.description = createTaskDto.description || null;
+    console.log(createTaskDto);
+    task.title = createTaskDto.title || "";
+    task.description = createTaskDto.description || "";
     task.stateId = state.id || null;
     task.priorityId = createTaskDto.priorityId || null;
     task.dependentTaskId = createTaskDto.dependentTaskId || null;
@@ -416,9 +416,10 @@ export class TasksService {
       throw new NotFoundException("Task not found");
     }
     console.log(updateTaskDto);
+ 
     task.title = updateTaskDto.title || task.title;
     task.description = updateTaskDto.description || task.description;
-    task.priorityId = updateTaskDto.priorityId || task.priorityId;
+    task.priorityId = updateTaskDto.priorityId !== undefined ? updateTaskDto.priorityId : task.priorityId;
     if (updateTaskDto.dates && updateTaskDto.dates.length >= 2) {
       task.startDate = updateTaskDto.dates[0] || task.startDate;
       task.endDate = updateTaskDto.dates[1] || task.endDate;

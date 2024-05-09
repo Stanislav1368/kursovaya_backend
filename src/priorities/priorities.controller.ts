@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Body, Post } from "@nestjs/common";
+import { Controller, Get, Param, Body, Post, Delete, Put } from "@nestjs/common";
 import { PrioritiesService } from "./priorities.service";
 import { CreatePriorityDto } from "./dto/create-priority.dto";
 
@@ -16,7 +16,14 @@ export class PrioritiesController {
 
   @Post()
   async createPriority(@Param("boardId") boardId: number, @Body() createPriorityDto: CreatePriorityDto) {
-
     return this.prioritiesService.createPriority(boardId, createPriorityDto);
+  }
+  @Delete("/:priorityId")
+  async deletePriority(@Param("boardId") boardId: number, @Param("priorityId") priorityId: number) {
+    return this.prioritiesService.deletePriority(boardId, priorityId);
+  }
+  @Put("/:priorityId")
+  async updatePriority(@Param("boardId") boardId: number, @Param("priorityId") priorityId: number, @Body() createPriorityDto: CreatePriorityDto) {
+    return this.prioritiesService.updatePriority(boardId, priorityId, createPriorityDto);
   }
 }
