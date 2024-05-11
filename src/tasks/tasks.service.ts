@@ -313,7 +313,7 @@ export class TasksService {
       console.log(task);
       const notif = new Notification();
       notif.title = "Задача завершена";
-      notif.message = `Задача ${task.title} завершена`;
+      notif.message = `Задача "${task.title}" завершена`;
       notif.userId = userId;
       notif.taskId = taskId;
       notif.boardId = boardId;
