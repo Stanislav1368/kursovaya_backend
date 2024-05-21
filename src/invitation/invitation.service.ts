@@ -29,6 +29,7 @@ export class InvitationService {
           inviterFirstName: inviter.firstName,
           inviterLastName: inviter.lastName,
           inviterMiddleName: inviter.middleName,
+          createdAt: invite.createdAt
         };
       })
     );
