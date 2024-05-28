@@ -32,6 +32,9 @@ export class UserBoards extends Model<UserBoards> {
   @Column({ type: DataType.INTEGER, allowNull: true })
   boardId: number;
 
+  @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false })
+  favorite: boolean;
+
   @BelongsTo(() => Role)
   role: Role;
 

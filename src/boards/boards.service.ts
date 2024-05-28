@@ -49,21 +49,41 @@ export class BoardsService {
   }
   async updateBoard(userId: number, boardId: number, updateBoardDto: UpdateBoardDto) {
     console.log(updateBoardDto.favorite);
+  
     const user = await this.userRepository.findByPk(userId);
     if (!user) {
       throw new NotFoundException("User not found");
     }
+  
     const board = await this.boardRepository.findByPk(boardId);
     if (!board) {
       throw new NotFoundException("Board not found");
     }
+  
+    // Update fields in the Board model
     board.isArchived = updateBoardDto.isArchived !== undefined ? updateBoardDto.isArchived : board.isArchived;
-    board.favorite = updateBoardDto.favorite !== undefined ? updateBoardDto.favorite : board.favorite;
     if (updateBoardDto.title) {
       board.title = updateBoardDto.title;
     }
     await board.save();
-    console.log(board.favorite);
+  
+    // Find the UserBoards record
+    const userBoard = await this.userBoardsRepository.findOne({
+      where: {
+        userId: userId,
+        boardId: boardId
+      }
+    });
+  
+    if (!userBoard) {
+      throw new NotFoundException("UserBoard association not found");
+    }
+  
+    // Update the favorite field in the UserBoards model
+    userBoard.favorite = updateBoardDto.favorite !== undefined ? updateBoardDto.favorite : userBoard.favorite;
+    await userBoard.save();
+  
+    console.log(userBoard.favorite);
     return board;
   }
   async getBoardById(boardId: number) {
